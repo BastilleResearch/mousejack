@@ -1,0 +1,52 @@
+Bastille Threat Research Team Tracking Number 5
+Document version: 1.1
+Cert VU#981271
+http://www.kb.cert.org/vuls/id/981271
+
+
+
+Overview
+
+A vulnerability has been discovered that allows keyboard HID packets to be 
+injected into an HP Wireless Elite v2 keyboard.
+
+
+
+Impact
+
+This vulnerability allows an attacker to inject keystrokes into a computer equipped
+with an HP Wireless Elite v2 keyboard.
+
+
+
+Affected Platforms
+
+The following products have been tested and shown to be affected:
+
+- HP Wireless Elite v2 keyboard
+- HP Wireless Elite USB dongle (USB ID 03f0:d407)
+
+
+
+Mitigation
+
+Exploiting this vulnerability involves transmitting RF packets to an HP USB 
+dongle, which requires physical proximity to the target computer. 
+
+
+
+More Information
+
+https://www.mousejack.com/
+
+
+
+Credits
+
+Marc Newlin
+
+
+
+About Bastille
+
+https://www.bastille.net/

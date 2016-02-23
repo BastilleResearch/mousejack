@@ -1,0 +1,55 @@
+Bastille Threat Research Team Tracking Number 1
+Document version: 1.1
+Cert VU#981271
+http://www.kb.cert.org/vuls/id/981271
+
+
+
+Overview
+
+A vulnerability has been discovered that allows Logitech Unifying keyboards and 
+mice to be paired with a Logitech Unifying dongle when the dongle is not in 
+pairing mode, and without any user interaction. 
+
+
+
+Impact
+
+This vulnerability allows an attacker to force-pair a fake keyboard or mouse 
+with a target Logitech Unifying dongle without any user interaction, and without 
+the dongle being in pairing mode.
+
+
+
+Affected Platforms
+
+The following products have been tested and shown to be affected:
+
+- Logitech Unifying dongle (USB ID 046d:c52b)
+  - firmware version 012.001.00019
+  - firmware version 012.003.00025
+
+
+
+Mitigation
+
+Exploiting this vulnerability involves transmitting RF packets to a Logitech Unifying 
+dongle, which requires physical proximity to the target computer.
+
+
+
+More Information
+
+https://www.mousejack.com/
+
+
+
+Credits
+
+Marc Newlin
+
+
+
+About Bastille
+
+https://www.bastille.net/

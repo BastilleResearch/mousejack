@@ -1,0 +1,52 @@
+Bastille Threat Research Team Tracking Number 7
+Document version: 1.1
+Cert VU#981271
+http://www.kb.cert.org/vuls/id/981271
+
+
+
+Overview
+
+A vulnerability has been discovered that allows keyboard HID packets to be 
+injected into a computer equipped with an AmazonBasics wireless mouse.
+
+
+
+Impact
+
+This vulnerability allows an attacker to inject keystrokes into a computer equipped
+with an AmazonBasics wireless mouse.
+
+
+
+Affected Platforms
+
+The following products have been tested and shown to be affected:
+
+- AmazonBasics Wireless Mouse MG-0975
+- AmazonBasics USB dongle RG-0976 (USB ID 04f2:0976)
+
+
+
+Mitigation
+
+Exploiting this vulnerability involves transmitting RF packets to an AmazonBasics 
+USB dongle, which requires physical proximity to the target computer. 
+
+
+
+More Information
+
+https://www.mousejack.com/
+
+
+
+Credits
+
+Marc Newlin
+
+
+
+About Bastille
+
+https://www.bastille.net/

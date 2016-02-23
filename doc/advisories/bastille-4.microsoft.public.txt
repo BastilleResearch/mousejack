@@ -1,0 +1,56 @@
+Bastille Threat Research Team Tracking Number 4
+Document version: 1.1
+Cert VU#981271
+http://www.kb.cert.org/vuls/id/981271
+
+
+
+Overview
+
+A vulnerability has been discovered that allows keyboard HID packets to be 
+injected into a computer equipped with a Microsoft wireless mouse. 
+
+
+
+Impact
+
+This vulnerability allows an attacker to inject keystrokes into a computer 
+equipped with a Microsoft wireless mouse. 
+
+
+
+Affected Platforms
+
+The following products have been tested and shown to be affected:
+
+- Microsoft Sculpt Ergonomic mouse
+- Microsoft Wireless Mobile Mouse 4000
+- Microsoft Wireless Mouse 5000
+- Microsoft 2.4GHz Transceiver v7.0 (USB ID 045e:0745)
+- Microsoft USB dongle model 1496 (USB ID 045e:07b2)
+- Microsoft USB dongle model 1461 (USB ID 045e:07a5)
+
+
+
+Mitigation
+
+Exploiting this vulnerability involves transmitting RF packets to a Microsoft USB 
+dongle, which requires physical proximity to the target computer.
+
+
+
+More Information
+
+https://www.mousejack.com/
+
+
+
+Credits
+
+Marc Newlin
+
+
+
+About Bastille
+
+https://www.bastille.net/

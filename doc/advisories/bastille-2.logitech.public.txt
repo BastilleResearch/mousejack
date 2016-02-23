@@ -1,0 +1,57 @@
+Bastille Threat Research Team Tracking Number 2
+Document version: 1.1
+Cert VU#981271
+http://www.kb.cert.org/vuls/id/981271
+
+
+
+Overview
+
+A vulnerability has been discovered in the way Logitech Unifying dongles process 
+received RF packets, allowing keystroke injection that bypasses encryption.
+
+
+
+Impact
+
+This vulnerability allows an attacker to inject keystrokes into a computer equipped 
+with a Logitech Unifying wireless keyboard.
+
+
+
+Affected Platforms
+
+The following products have been tested and shown to be affected:
+
+- Logitech K400r
+- Logitech K360
+- Logitech K750 
+- Logitech K830
+- Logitech Unifying dongle (USB ID 046d:c52b)
+  - firmware version 012.001.00019
+  - firmware version 012.003.00025
+
+
+
+Mitigation
+
+Exploiting this vulnerability involves transmitting RF packets to a Logitech Unifying 
+dongle, which requires physical proximity to the target computer.
+
+
+
+More Information
+
+https://www.mousejack.com/
+
+
+
+Credits
+
+Marc Newlin
+
+
+
+About Bastille
+
+https://www.bastille.net/

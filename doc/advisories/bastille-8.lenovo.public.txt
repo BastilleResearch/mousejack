@@ -1,0 +1,58 @@
+Bastille Threat Research Team Tracking Number 8
+Document version: 1.1
+Cert VU#981271
+http://www.kb.cert.org/vuls/id/981271
+
+
+
+Overview
+
+A vulnerability has been discovered that makes it possible to disable a Lenovo 
+wireless keyboard or mouse by transmitting a specially crafted RF packet.
+
+
+
+Impact
+
+This vulnerability allows an attacker to disable a Lenovo wireless keyboard or 
+mouse, preventing the user from interacting with their computer.
+
+
+
+Affected Platforms
+
+The following products have been tested and shown to be affected:
+
+- Lenovo Ultraslim Plus Keyboard
+- Lenovo Ultraslim Plus Mouse
+- Lenovo Ultraslim Keyboard
+- Lenovo Ultraslim Mouse
+- Lenovo N700 Mouse
+- Lenovo Ultraslim Plus USB dongle (USB ID 17ef:6022)
+- Lenovo Ultraslim USB dongle (USB ID 17ef:6032)
+- Lenovo N700 USB dongle (USB ID 17ef:6060)
+
+
+
+Mitigation
+
+Exploiting this vulnerability involves transmitting RF packets to a Lenovo USB 
+dongle, which requires physical proximity to the target computer.
+
+
+
+More Information
+
+https://www.mousejack.com/
+
+
+
+Credits
+
+Marc Newlin
+
+
+
+About Bastille
+
+https://www.bastille.net/

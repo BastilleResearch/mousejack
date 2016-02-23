@@ -1,0 +1,54 @@
+Bastille Threat Research Team Tracking Number 1
+Document version: 1.1
+Cert VU#981271
+http://www.kb.cert.org/vuls/id/981271
+
+
+
+Overview
+
+A vulnerability has been discovered that allows keyboards and mice to be paired 
+with a Dell KM714 dongle when the dongle is not in pairing mode, and without any 
+user interaction. 
+
+
+
+Impact
+
+This vulnerability allows an attacker to force-pair a fake keyboard or mouse 
+with a target Dell KM714 dongle without any user interaction, and without the 
+dongle being in pairing mode.
+
+
+
+Affected Platforms
+
+The following products have been tested and shown to be affected:
+
+- Dell KM714 Wireless Keyboard and Mouse Combo
+- Dell KM714 USB dongle (USB ID 046d:c52b)
+
+
+
+Mitigation
+
+Exploiting this vulnerability involves transmitting RF packets to a Dell KM714 USB
+dongle, which requires physical proximity to the target computer. 
+
+
+
+More Information
+
+https://www.mousejack.com/
+
+
+
+Credits
+
+Marc Newlin
+
+
+
+About Bastille
+
+https://www.bastille.net/
