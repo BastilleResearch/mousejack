@@ -6,7 +6,7 @@ For information on the MouseJack vulnerabilities, please visit [mousejack.com](h
 
 ## Requirements
 
-- SDCC
+- SDCC (minimum version 3.1.0)
 - GNU Binutils 
 - Python 
 - PyUSB

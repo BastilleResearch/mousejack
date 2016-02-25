@@ -1,11 +1,15 @@
-SDCC    = sdcc
-CFLAGS  = --model-large --std-c99
+SDCC ?= sdcc
+CFLAGS = --model-large --std-c99
 LDFLAGS = --xram-loc 0x8000 --xram-size 2048 --model-large
-VPATH   = src/
-
+VPATH = src/
 OBJS = main.rel usb.rel usb_desc.rel radio.rel
 
-all: bin/ dongle.bin
+SDCC_VER := $(shell $(SDCC) -v | grep -Po "\d\.\d\.\d" | sed "s/\.//g")
+
+all: sdcc bin/ dongle.bin
+
+sdcc:
+	@if test $(SDCC_VER) -lt 310; then echo "Please update SDCC to 3.1.0 or newer."; exit 2; fi
 
 dongle.bin: $(OBJS)
 	$(SDCC) $(LDFLAGS) $(OBJS:%=bin/%) -o bin/dongle.ihx
