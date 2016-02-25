@@ -61,7 +61,7 @@ for product_id in product_ids:
   try:
     dongle = usb.core.find(idVendor=0x1915, idProduct=product_id)
     dongle.set_configuration()
-  except:
+  except AttributeError:
     continue
 
   # Device found, instruct it to jump to the Nordic bootloader 
@@ -81,7 +81,7 @@ while time.time() - start < 1:
     dongle = usb.core.find(idVendor=0x1915, idProduct=0x0101)
     dongle.set_configuration()
     break
-  except:
+  except AttributeError:
     continue  
 
 # Verify that we found a compatible device 

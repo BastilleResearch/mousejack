@@ -5,7 +5,7 @@ VPATH   = src/
 
 OBJS = main.rel usb.rel usb_desc.rel radio.rel
 
-all: dongle.bin
+all: bin/ dongle.bin
 
 dongle.bin: $(OBJS)
 	$(SDCC) $(LDFLAGS) $(OBJS:%=bin/%) -o bin/dongle.ihx
