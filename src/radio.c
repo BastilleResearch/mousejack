@@ -101,7 +101,15 @@ void spi_read(uint8_t command, uint8_t * buffer, uint8_t length)
 // Write a single byte register over SPI
 void write_register_byte(uint8_t reg, uint8_t byte) 
 { 
-  write_register(W_REGISTER | reg, &byte, 1);
+  write_register(reg, &byte, 1);
+}
+
+// Read a single byte register over SPI
+uint8_t read_register_byte(uint8_t reg)
+{
+  uint8_t value;
+  read_register(reg, &value, 1);
+  return value;
 }
 
 // Update a CRC16-CCITT with 1-8 bits from a given byte
@@ -181,11 +189,12 @@ void handle_radio_request(uint8_t request, uint8_t * data)
           read_register(R_RX_PAYLOAD, &in1buf[1], value);
           in1buf[0] = 0;
           in1bc = value + 1;
+          flush_rx();
           return;
         }
         else
         {
-          // Invalid payload width, flush the RX FIFO
+          // Invalid payload width
           in1bc = 1;
           in1buf[0] = 0xFF;
           flush_rx();
@@ -251,6 +260,7 @@ void handle_radio_request(uint8_t request, uint8_t * data)
               for(x = 0; x < payload_length + 3; x++)
                 in1buf[5+x] = ((payload[6 + x] << 1) & 0xFF) | (payload[7 + x] >> 7);
               in1bc = 5 + payload_length;
+              flush_rx();
               return;
             }
           }
@@ -315,20 +325,19 @@ void handle_radio_request(uint8_t request, uint8_t * data)
     // Clear the max retries and data sent flags
     write_register_byte(STATUS, MAX_RT | TX_DS | RX_DR);
 
-    // Enable 16 bit CRC, enable TX, power up
-    write_register_byte(CONFIG, PWR_UP | EN_CRC | CRC0); 
+    // Enable TX
+    write_register_byte(CONFIG, read_register_byte(CONFIG) & ~PRIM_RX); 
 
-    // Enable dynamic payload length and automatic ACK handling
-    write_register_byte(FEATURE, EN_DPL | EN_DYN_ACK | EN_ACK_PAY);
-    write_register_byte(EN_AA, ENAA_P0);
+    // Enable auto ACK handling
+    write_register_byte(EN_AA, ENAA_P0);     
 
     // Write the payload
     spi_write(W_TX_PAYLOAD, &data[3], data[0]);
 
     // Bring CE high to initiate the transfer
     rfce = 1;
-    delay_us(25);
-    rfce = 0;      
+    delay_us(10);
+    rfce = 0;
 
     // Wait for success, failure, or timeout
     while(true)
@@ -356,11 +365,10 @@ void handle_radio_request(uint8_t request, uint8_t * data)
     }
 
     // Disable auto ack
-    write_register_byte(FEATURE, EN_DPL | EN_ACK_PAY);
     write_register_byte(EN_AA, ENAA_NONE);  
 
-    // Enable 16 bit CRC, enable RX, power up
-    write_register_byte(CONFIG, PWR_UP | EN_CRC | CRC0 | PRIM_RX);  
+    // Enable RX
+    write_register_byte(CONFIG, read_register_byte(CONFIG) | PRIM_RX);  
 
     // CE high
     rfce = 1;

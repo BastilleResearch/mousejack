@@ -58,6 +58,11 @@ void spi_read(uint8_t command, uint8_t * buffer, uint8_t length);
 //   byte: value to write
 void write_register_byte(uint8_t reg, uint8_t byte);
 
+// Read a single byte register over SPI
+//   reg:    register to write to
+//   return: value read
+uint8_t read_register_byte(uint8_t reg);
+
 // Read a register over SPI
 //   reg:    register to read from
 //   buffer: buffer to fill
