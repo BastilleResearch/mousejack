@@ -23,9 +23,9 @@ from lib import common
 # Parse command line arguments and initialize the radio
 common.init_args('./nrf24-sniffer.py')
 common.parser.add_argument('-a', '--address', type=str, help='Address to sniff, following as it changes channels', required=True)
-common.parser.add_argument('-t', '--timeout', type=float, help='Channel timeout, in milliseconds', default='100')
-common.parser.add_argument('-k', '--ack_timeout', type=int, help='ACK timeout in microseconds, accepts [250,4000], step 250', default=500)
-common.parser.add_argument('-r', '--retries', type=int, help='Auto retry limit, accepts [0,15]', default='5', choices=xrange(0, 16), metavar='RETRIES')
+common.parser.add_argument('-t', '--timeout', type=float, help='Channel timeout, in milliseconds', default=100)
+common.parser.add_argument('-k', '--ack_timeout', type=int, help='ACK timeout in microseconds, accepts [250,4000], step 250', default=250)
+common.parser.add_argument('-r', '--retries', type=int, help='Auto retry limit, accepts [0,15]', default=1, choices=xrange(0, 16), metavar='RETRIES')
 common.parse_and_init()
 
 # Parse the address
@@ -38,7 +38,7 @@ if len(address) < 2:
 common.radio.enter_sniffer_mode(address)
 
 # Convert channel timeout from milliseconds to seconds 
-timeout = common.args.timeout / 1000 
+timeout = float(common.args.timeout) / float(1000)
 
 # Payload used for pinging the target device 
 # (some nRF24 based devices don't play well with shorter payloads)
@@ -58,9 +58,10 @@ while True:
   if time.time() - last_ping > timeout:
 
     # First try pinging on the active channel 
-    if not common.radio.transmit_payload('ping_payload', ack_timeout, retries):
+    if not common.radio.transmit_payload(ping_payload, ack_timeout, retries):
 
       # Ping failed on the active channel, so sweep through all available channels
+      success = False
       for channel_index in range(len(common.channels)):
         common.radio.set_channel(common.channels[channel_index])
         if common.radio.transmit_payload(ping_payload, ack_timeout, retries):
@@ -68,10 +69,11 @@ while True:
           # Ping successful, exit out of the ping sweep 
           last_ping = time.time()
           logging.debug('Ping success on channel {0}'.format(common.channels[channel_index]))
+          success = True
           break
 
       # Ping sweep failed 
-      logging.debug('Unable to ping {0}'.format(address_string))
+      if not success: logging.debug('Unable to ping {0}'.format(address_string))
 
     # Ping succeeded on the active channel 
     else:

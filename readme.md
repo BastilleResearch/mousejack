@@ -159,3 +159,26 @@ Map the star network that address 61:49:66:82:03 belongs to
 ```
 ./nrf24-network-mapper.py -a 61:49:66:82:03
 ```
+
+## continuous tone test
+
+The nRF24LU1+ chips include a test mechanism to transmit a continuous tone, the frequency of which can be verified if you have access to an SDR. There is the potential for frequency offsets between devices to cause unexpected behavior. For instance, one of the SparkFun breakout boards that was tested had a frequency offset of ~300kHz, which caused it to receive packets on two adjacent channels.
+
+This script will cause the transceiver to transmit a tone on the first channel that is passed in. 
+
+```
+usage: ./nrf24-continuous-tone-test.py [-h] [-c N [N ...]] [-v] [-l]
+
+optional arguments:
+  -h, --help                          show this help message and exit
+  -c N [N ...], --channels N [N ...]  RF channels
+  -v, --verbose                       Enable verbose output
+  -l, --lna                           Enable the LNA (for CrazyRadio PA dongles)
+
+```
+
+Transmit a continuous tone at 2405MHz
+
+```
+./nrf24-continuous-tone-test.py -c 5
+```

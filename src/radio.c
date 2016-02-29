@@ -169,6 +169,14 @@ void handle_radio_request(uint8_t request, uint8_t * data)
     enter_promiscuous_mode(&data[1] /* address prefix */, data[0] /* prefix length */);       
   }    
 
+  // Enter continuous tone test mode
+  else if(request == ENTER_TONE_TEST_MODE)
+  {
+    configure_phy(PWR_UP, CONT_WAVE | PLL_LOCK, 0);
+    in1bc = 0;
+    return;
+  }
+
   // Receive a packet 
   else if(request == RECEIVE_PACKET)
   {
