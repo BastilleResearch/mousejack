@@ -26,6 +26,7 @@ common.parser.add_argument('-a', '--address', type=str, help='Address to sniff, 
 common.parser.add_argument('-t', '--timeout', type=float, help='Channel timeout, in milliseconds', default=100)
 common.parser.add_argument('-k', '--ack_timeout', type=int, help='ACK timeout in microseconds, accepts [250,4000], step 250', default=250)
 common.parser.add_argument('-r', '--retries', type=int, help='Auto retry limit, accepts [0,15]', default=1, choices=xrange(0, 16), metavar='RETRIES')
+common.parser.add_argument('-p', '--ping_payload', type=str, help='Ping payload, ex 0F:0F:0F:0F', default='0F:0F:0F:0F', metavar='PING_PAYLOAD')
 common.parse_and_init()
 
 # Parse the address
@@ -40,9 +41,8 @@ common.radio.enter_sniffer_mode(address)
 # Convert channel timeout from milliseconds to seconds 
 timeout = float(common.args.timeout) / float(1000)
 
-# Payload used for pinging the target device 
-# (some nRF24 based devices don't play well with shorter payloads)
-ping_payload = '\x0F\x0F\x0F\x0F'
+# Parse the ping payload
+ping_payload = common.args.ping_payload.replace(':', '').decode('hex')
 
 # Format the ACK timeout and auto retry values 
 ack_timeout = int(common.args.ack_timeout / 250) - 1
