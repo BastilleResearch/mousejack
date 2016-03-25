@@ -15,7 +15,6 @@
   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-
 #include <string.h>
 #include <time.h>
 #include <stdlib.h>
@@ -27,8 +26,9 @@
 __xdata struct usb_request_t * request = (__xdata void*)setupbuf;
 
 // Initialize the USB configuraiton 
-void init_usb() 
+bool init_usb() 
 {
+  uint16_t ms_elapsed = 0; 
   configured = false;
 
   // Wakeup USB
@@ -43,7 +43,16 @@ void init_usb()
   usb_reset_config();
 
   // Wait for the USB controller to reach the configured state
-  while(!configured);
+  while(!configured)
+  {
+    // Time out if the device isn't configured after 1000ms
+    delay_us(1000);
+    ms_elapsed += 1;
+    if(ms_elapsed > 1000) return false;
+  }
+
+  // Device configured successfully
+  return true;
 }
 
 // Reset the USB configuration

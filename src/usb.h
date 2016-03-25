@@ -26,7 +26,7 @@ static void (*bootloader)() = (void (*)())0x7800;
 static bool configured;
 
 // Initialize the USB configuraiton 
-void init_usb();
+bool init_usb();
 
 // Handle a USB setup request 
 void handle_setup_request();
