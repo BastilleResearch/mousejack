@@ -68,6 +68,8 @@ for product_id in product_ids:
   logging.info("Device found, jumping to the Nordic bootloader")
   if product_id == 0x0102: dongle.write(0x01, [0xFF], timeout=usb_timeout)
   else: dongle.ctrl_transfer(0x40, 0xFF, 0, 0, (), timeout=usb_timeout)
+  try: dongle.reset()
+  except: pass
 
 # Find an attached device running the Nordic bootloader, waiting up
 # to 1000ms to allow time for USB to reinitialize after the the 
