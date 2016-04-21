@@ -27,8 +27,8 @@ void main()
   ien0 = 0x80;  // enable interrupts
 
   // Initialise and connect the USB controller
-  while(!init_usb());
-
+  init_usb();
+  
   // Flush the radio FIFOs
   flush_rx();
   flush_tx();

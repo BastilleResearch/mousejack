@@ -43,13 +43,7 @@ bool init_usb()
   usb_reset_config();
 
   // Wait for the USB controller to reach the configured state
-  while(!configured)
-  {
-    // Time out if the device isn't configured after 1000ms
-    delay_us(1000);
-    ms_elapsed += 1;
-    if(ms_elapsed > 1000) return false;
-  }
+  while(!configured);
 
   // Device configured successfully
   return true;
@@ -124,18 +118,22 @@ void write_device_string(const char * string)
 // Write a descriptor (as specified in the current request) to EP0
 bool write_descriptor()
 {
+  uint8_t desc_len = request->wLength;
+
   switch(request->wValue >> 8)
   {
     // Device descriptor request
     case DEVICE_DESCRIPTOR:
-      memcpy(in0buf, &device_descriptor, request->wLength);
-      in0bc = request->wLength;  
+      if(desc_len > device_descriptor.bLength) desc_len = device_descriptor.bLength;
+      memcpy(in0buf, &device_descriptor, desc_len);
+      in0bc = desc_len;
       return true;
   
     // Configuration descriptor request
     case CONFIGURATION_DESCRIPTOR:
-      memcpy(in0buf, &configuration_descriptor, request->wLength);
-      in0bc = request->wLength;        
+      if(desc_len > configuration_descriptor.wTotalLength) desc_len = configuration_descriptor.wTotalLength;
+      memcpy(in0buf, &configuration_descriptor, desc_len);
+      in0bc = desc_len;
       return true;
 
     // String descriptor request
@@ -169,7 +167,7 @@ void handle_setup_request()
     case SET_CONFIGURATION:   
       if (request->wValue == 0) configured = false; // Not configured, drop back to powered state
       else configured = true;                       // Configured
-      handled = true;    
+      handled = true;
       break;
 
     // Get the configuration state
