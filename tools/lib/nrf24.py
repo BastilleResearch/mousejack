@@ -38,6 +38,7 @@ TRANSMIT_PAYLOAD          = 0x04
 ENTER_SNIFFER_MODE        = 0x05
 ENTER_PROMISCUOUS_MODE    = 0x06
 ENTER_TONE_TEST_MODE      = 0x07
+TRANSMIT_ACK_PAYLOAD      = 0x08
 SET_CHANNEL               = 0x09
 GET_CHANNEL               = 0x0A
 ENABLE_LNA_PA             = 0x0B
@@ -97,6 +98,12 @@ class nrf24:
     self.send_usb_command(TRANSMIT_PAYLOAD, data)
     return self.dongle.read(0x81, 64, timeout=nrf24.usb_timeout)[0] > 0
       
+  # Transmit an ACK payload
+  def transmit_ack_payload(self, payload):
+    data = [len(payload)]+map(ord, payload)
+    self.send_usb_command(TRANSMIT_ACK_PAYLOAD, data)
+    return self.dongle.read(0x81, 64, timeout=nrf24.usb_timeout)[0] > 0
+
   # Set the RF channel
   def set_channel(self, channel):
     if channel > 125: channel = 125

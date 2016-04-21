@@ -181,7 +181,7 @@ enum nrf24_command
   R_RX_PL_WID      = 0x60,
   R_RX_PAYLOAD     = 0x61,
   W_TX_PAYLOAD     = 0xA0,
-  W_ACK_PAYLOAD_P0 = 0xA8,
+  W_ACK_PAYLOAD    = 0xA8,
   FLUSH_TX         = 0xE1,
   FLUSH_RX         = 0xE2,
   _NOP             = 0xFF,

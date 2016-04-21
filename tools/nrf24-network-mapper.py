@@ -26,6 +26,7 @@ common.parser.add_argument('-a', '--address', type=str, help='Known address', re
 common.parser.add_argument('-p', '--passes', type=str, help='Number of passes (default 2)', default=2)
 common.parser.add_argument('-k', '--ack_timeout', type=int, help='ACK timeout in microseconds, accepts [250,4000], step 250', default=500)
 common.parser.add_argument('-r', '--retries', type=int, help='Auto retry limit, accepts [0,15]', default='5', choices=xrange(0, 16), metavar='RETRIES')
+common.parser.add_argument('-p', '--ping_payload', type=str, help='Ping payload, ex 0F:0F:0F:0F', default='0F:0F:0F:0F', metavar='PING_PAYLOAD')
 common.parse_and_init()
 
 # Parse the address
@@ -37,9 +38,8 @@ if len(address) < 2:
 # Put the radio in sniffer mode (ESB w/o auto ACKs)
 common.radio.enter_sniffer_mode(address)
 
-# Payload used for pinging the target device 
-# (some nRF24 based devices don't play well with shorter payloads)
-ping_payload = '\x0F\x0F\x0F\x0F'
+# Parse the ping payload
+ping_payload = common.args.ping_payload.replace(':', '').decode('hex')
 
 # Format the ACK timeout and auto retry values 
 ack_timeout = int(common.args.ack_timeout / 250) - 1
@@ -52,6 +52,7 @@ for p in range(common.args.passes):
 
   # Step through each potential address
   for b in range(256):
+
     try_address = chr(b) + address[1:]
     logging.info('Trying address {0}'.format(':'.join('{:02X}'.format(ord(b)) for b in try_address[::-1])))
     common.radio.enter_sniffer_mode(try_address)

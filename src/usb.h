@@ -65,6 +65,7 @@ enum usb_request_type_t
 #define ENTER_SNIFFER_MODE     0x05
 #define ENTER_PROMISCUOUS_MODE 0x06
 #define ENTER_TONE_TEST_MODE   0x07
+#define TRANSMIT_ACK_PAYLOAD   0x08
 #define SET_CHANNEL            0x09
 #define GET_CHANNEL            0x0A
 #define ENABLE_LNA             0x0B

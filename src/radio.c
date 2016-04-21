@@ -312,6 +312,58 @@ void handle_radio_request(uint8_t request, uint8_t * data)
     in1bc = 0;      
   }    
 
+  // Transmit an ACK payload
+  else if(request == TRANSMIT_ACK_PAYLOAD)
+  {
+    uint16_t elapsed;
+    uint8_t status;
+
+    // Clamp to 1-32 byte payload
+    if(data[0] > 32) data[0] = 32;
+    if(data[0] < 1) data[0] = 1;
+
+    // CE low
+    rfce = 0;
+
+    // Flush the TX/RX buffers
+    flush_tx();
+    flush_rx();
+
+    // Clear the max retries and data sent flags
+    write_register_byte(STATUS, MAX_RT | TX_DS | RX_DR);
+
+    // Enable auto ACK handling and ACK payloads
+    write_register_byte(EN_AA, ENAA_P0);
+    write_register_byte(FEATURE, EN_DPL | EN_ACK_PAY);
+
+    // Write the AC Kpayload
+    spi_write(W_ACK_PAYLOAD, &data[1], data[0]);
+
+    // CE high
+    rfce = 1;
+
+    // Wait up to 500ms for the ACK payload to be transmitted
+    elapsed = 0;
+    in1buf[0] = 0;
+    while(elapsed < 500)
+    {
+      status = read_register_byte(STATUS);
+      if((status & RX_DR) == RX_DR)
+      {
+        in1buf[0] = 1;
+        break;
+      }
+
+      delay_us(1000);
+      elapsed++;
+    }
+
+    // Disable auto ACK
+    write_register_byte(EN_AA, ENAA_NONE);
+
+    in1bc = 1;
+  }
+
   // Transmit a payload
   else if(request == TRANSMIT_PAYLOAD)
   {
