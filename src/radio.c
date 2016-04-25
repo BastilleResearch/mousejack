@@ -5,14 +5,14 @@
 #include "radio.h"
 #include "nRF24LU1P.h"
 
-// Enter promiscuous mode
+// Enter ESB promiscuous mode
 void enter_promiscuous_mode(uint8_t * prefix, uint8_t prefix_length)
 {
   // Update the promiscuous mode state
   int x;
   for(x = 0; x < prefix_length; x++) pm_prefix[prefix_length - 1 - x] = prefix[x];
   pm_prefix_length = prefix_length > 5 ? 5 : prefix_length;
-  in_pm = true;
+  radio_mode = promiscuous;
 
   // CE low
   rfce = 0;
@@ -38,6 +38,50 @@ void enter_promiscuous_mode(uint8_t * prefix, uint8_t prefix_length)
 
   // Disable CRC, enable RX, 2Mbps data rate, 32 byte payload width
   configure_phy(PRIM_RX | PWR_UP, RATE_2M, 32);
+
+  // CE high 
+  rfce = 1;
+  in1bc = 0;
+}
+
+// Enter generic promiscuous mode
+void enter_promiscuous_mode_generic(uint8_t * prefix, uint8_t prefix_length, uint8_t rate)
+{
+  // Update the promiscuous mode state
+  int x;
+  for(x = 0; x < prefix_length; x++) pm_prefix[prefix_length - 1 - x] = prefix[x];
+  pm_prefix_length = prefix_length > 5 ? 5 : prefix_length;
+  radio_mode = promiscuous_generic;
+
+  // CE low
+  rfce = 0;
+
+  // Enable RX pipe 0
+  write_register_byte(EN_RXADDR, ENRX_P0);
+
+  // Set the default promiscuous mode RX address
+  if(pm_prefix_length == 0) configure_address(promiscuous_address, 2);
+
+  // Set the RX address to a single prefix byte and a premable byte
+  else if(pm_prefix_length == 1)
+  {
+    uint8_t address[2] = { pm_prefix[0], (pm_prefix[0] & 0x80) == 0x80 ? 0xAA : 0x55 };
+    configure_address(address, 2);
+  }
+
+  // If the prefix is two or more bytes, set it as the address
+  else configure_address(pm_prefix, pm_prefix_length);
+
+  // Disable dynamic payload length and automatic ACK handling
+  configure_mac(0, 0, ENAA_NONE);
+
+  // Disable CRC, enable RX, specified data rate, and 32 byte payload width
+  switch(rate)
+  {
+    case 0:  configure_phy(PRIM_RX | PWR_UP, RATE_250K, 32); break;
+    case 1:  configure_phy(PRIM_RX | PWR_UP, RATE_1M, 32); break;
+    default: configure_phy(PRIM_RX | PWR_UP, RATE_2M, 32); break;
+  }
 
   // CE high 
   rfce = 1;
@@ -163,10 +207,16 @@ void handle_radio_request(uint8_t request, uint8_t * data)
     return;
   }  
 
-  // Enter promiscuous mode 
+  // Enter ESB promiscuous mode 
   else if(request == ENTER_PROMISCUOUS_MODE)
   {
     enter_promiscuous_mode(&data[1] /* address prefix */, data[0] /* prefix length */);       
+  }    
+
+  // Enter generic promiscuous mode 
+  else if(request == ENTER_PROMISCUOUS_MODE_GENERIC)
+  {
+    enter_promiscuous_mode_generic(&data[2] /* address prefix */, data[0] /* prefix length */, data[1] /* rate */);       
   }    
 
   // Enter continuous tone test mode
@@ -186,8 +236,8 @@ void handle_radio_request(uint8_t request, uint8_t * data)
     read_register(FIFO_STATUS, &value, 1);
     if((value & 1) == 0)
     {
-      // Sniffer mode?
-      if(!in_pm)
+      // ESB sniffer mode
+      if(radio_mode == sniffer)
       {
         // Get the payload width 
         read_register(R_RX_PL_WID, &value, 1);
@@ -210,8 +260,8 @@ void handle_radio_request(uint8_t request, uint8_t * data)
         }
       }
 
-      // Promiscuous mode?
-      else
+      // ESB promiscuous mode
+      else if(radio_mode == promiscuous)
       {
         int x, offset;
         uint8_t payload_length;
@@ -274,6 +324,23 @@ void handle_radio_request(uint8_t request, uint8_t * data)
           }
         }
       }
+
+      // Generic promiscuous mode
+      else if(radio_mode == promiscuous_generic)
+      {
+        int x;
+        uint8_t payload[37];
+
+        // Read in the "promiscuous" mode payload, concatenated to the prefix
+        for(x = 0; x < pm_prefix_length; x++) payload[pm_prefix_length - x - 1] = pm_prefix[x];
+        read_register(R_RX_PAYLOAD, &payload[pm_prefix_length], 32);
+
+        // Write the payload to the output buffer
+        memcpy(in1buf, payload, pm_prefix_length + 32);
+        in1bc = pm_prefix_length + 32;
+        flush_rx();
+        return;
+      }
     }  
 
     // No payload
@@ -285,7 +352,7 @@ void handle_radio_request(uint8_t request, uint8_t * data)
   // Enter sniffer mode
   else if(request == ENTER_SNIFFER_MODE)
   {
-    in_pm = false;
+    radio_mode = sniffer;
 
     // Clamp to 2-5 byte addresses
     if(data[0] > 5) data[0] = 5;
@@ -364,7 +431,7 @@ void handle_radio_request(uint8_t request, uint8_t * data)
     in1bc = 1;
   }
 
-  // Transmit a payload
+  // Transmit an ESB payload
   else if(request == TRANSMIT_PAYLOAD)
   {
     // Clamp to 1-32 byte payload
@@ -434,5 +501,66 @@ void handle_radio_request(uint8_t request, uint8_t * data)
     rfce = 1;
     in1bc = 1;   
   }         
+
+  // Transmit a generic payload
+  else if(request == TRANSMIT_PAYLOAD_GENERIC)
+  {
+    // Clamp to 1-32 byte payload
+    if(data[0] > 32) data[0] = 32;
+    if(data[0] < 1) data[0] = 1;
+
+    // CE low
+    rfce = 0;
+
+    // Flush the TX buffer
+    flush_tx();   
+    flush_rx();   
+
+    // Clear the max retries and data sent flags
+    write_register_byte(STATUS, MAX_RT | TX_DS | RX_DR);
+
+    // Enable TX
+    write_register_byte(CONFIG, read_register_byte(CONFIG) & ~PRIM_RX); 
+
+    // Set a generic address
+    {
+      uint8_t address[2] = { 0xAA, 0xAA };
+      configure_address(address, 2);
+    }
+
+    // Write the payload
+    spi_write(W_TX_PAYLOAD, &data[1], data[0]);
+
+    // Bring CE high to initiate the transfer
+    rfce = 1;
+    delay_us(10);
+    rfce = 0;
+
+    // Wait for transmit
+    while(true)
+    {
+      // Read the STATUS register
+      rfcsn = 0;
+      RFDAT = _NOP;
+      RFRDY = 0;
+      while(!RFRDY);
+      rfcsn = 1;
+
+      // Successful transmit
+      if((RFDAT & TX_DS) == TX_DS)
+      {
+        in1buf[0] = 1;
+        break;
+      }
+    }
+
+    // Enable RX and set the promiscuous mode address
+    write_register_byte(CONFIG, read_register_byte(CONFIG) | PRIM_RX);  
+    configure_address(pm_prefix, pm_prefix_length);
+
+    // CE high
+    rfce = 1;
+    in1bc = 1;   
+  }      
 }
 

@@ -19,10 +19,16 @@
 #include <stdint.h>
 #include "nRF24LU1P.h"
 
-// Enter promiscuous mode
+// Enter ESB promiscuous mode
 //   prefix:        address prefix; used for vendors with fixed start of address bytes
 //   prefix_length: prefix length, in bytes
 void enter_promiscuous_mode(uint8_t * prefix, uint8_t prefix_length);
+
+// Enter generic promiscuous mode
+//   prefix:        address prefix; used for vendors with fixed start of address bytes
+//   prefix_length: prefix length, in bytes
+//   rate:          data rate (0=250K, 1=1M, 2=2M)
+void enter_promiscuous_mode_generic(uint8_t * prefix, uint8_t prefix_length, uint8_t rate);
 
 // Configure addressing on pipe 0
 //   address: address bytes
@@ -91,7 +97,22 @@ uint16_t crc_update(uint16_t crc, uint8_t byte, uint8_t bits);
 // Default promiscuous mode address
 __xdata static const uint8_t promiscuous_address[2] = { 0xAA, 0x00 };
 
+// Radio mode
+enum radio_mode_t
+{
+  // ESB sniffer mode 
+  sniffer = 0,
+
+  // ESB promiscuous mode
+  promiscuous = 1,
+
+  // Generic promiscuous mode
+  promiscuous_generic = 2,
+};
+
+// Radio mode
+__xdata static uint8_t radio_mode; 
+
 // Promiscuous mode state
-__xdata static uint8_t in_pm;        // In promiscuous mode flag
 __xdata static int pm_prefix_length; // Promixcuous mode address prefix length
 __xdata static uint8_t pm_prefix[5]; // Promixcuous mode address prefix

@@ -23,7 +23,6 @@ from lib import common
 # Parse command line arguments and initialize the radio
 common.init_args('./nrf24-network-mapper.py')
 common.parser.add_argument('-a', '--address', type=str, help='Known address', required=True)
-common.parser.add_argument('-p', '--passes', type=str, help='Number of passes (default 2)', default=2)
 common.parser.add_argument('-k', '--ack_timeout', type=int, help='ACK timeout in microseconds, accepts [250,4000], step 250', default=500)
 common.parser.add_argument('-r', '--retries', type=int, help='Auto retry limit, accepts [0,15]', default='5', choices=xrange(0, 16), metavar='RETRIES')
 common.parser.add_argument('-p', '--ping_payload', type=str, help='Ping payload, ex 0F:0F:0F:0F', default='0F:0F:0F:0F', metavar='PING_PAYLOAD')
@@ -48,7 +47,7 @@ retries = max(0, min(common.args.retries, 15))
 
 # Ping each address on each channel args.passes number of times
 valid_addresses = []
-for p in range(common.args.passes):
+for p in range(2):
 
   # Step through each potential address
   for b in range(256):
