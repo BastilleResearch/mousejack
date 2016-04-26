@@ -78,9 +78,9 @@ void enter_promiscuous_mode_generic(uint8_t * prefix, uint8_t prefix_length, uin
   // Disable CRC, enable RX, specified data rate, and 32 byte payload width
   switch(rate)
   {
-    case 0:  configure_phy(PRIM_RX | PWR_UP, RATE_250K, 32); break;
-    case 1:  configure_phy(PRIM_RX | PWR_UP, RATE_1M, 32); break;
-    default: configure_phy(PRIM_RX | PWR_UP, RATE_2M, 32); break;
+    case 0:  configure_phy(PRIM_RX | PWR_UP, RF_PWR_4 | RATE_250K, 32); break;
+    case 1:  configure_phy(PRIM_RX | PWR_UP, RF_PWR_4 | RATE_1M, 32); break;
+    default: configure_phy(PRIM_RX | PWR_UP, RF_PWR_4 | RATE_2M, 32); break;
   }
 
   // CE high 
@@ -505,9 +505,15 @@ void handle_radio_request(uint8_t request, uint8_t * data)
   // Transmit a generic payload
   else if(request == TRANSMIT_PAYLOAD_GENERIC)
   {
+    uint8_t address_start = data[0] + data[1] + 2;
+
     // Clamp to 1-32 byte payload
     if(data[0] > 32) data[0] = 32;
     if(data[0] < 1) data[0] = 1;
+
+    // Clamp to 1-5 byte address
+    if(data[1] > 5) data[1] = 5;
+    if(data[1] < 1) data[1] = 1;
 
     // CE low
     rfce = 0;
@@ -522,14 +528,11 @@ void handle_radio_request(uint8_t request, uint8_t * data)
     // Enable TX
     write_register_byte(CONFIG, read_register_byte(CONFIG) & ~PRIM_RX); 
 
-    // Set a generic address
-    {
-      uint8_t address[2] = { 0xAA, 0xAA };
-      configure_address(address, 2);
-    }
+    // Set the address
+    configure_address(&data[address_start], data[1]);
 
     // Write the payload
-    spi_write(W_TX_PAYLOAD, &data[1], data[0]);
+    spi_write(W_TX_PAYLOAD, &data[2], data[0]);
 
     // Bring CE high to initiate the transfer
     rfce = 1;

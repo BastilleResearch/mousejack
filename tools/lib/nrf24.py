@@ -109,8 +109,8 @@ class nrf24:
     return self.dongle.read(0x81, 64, timeout=nrf24.usb_timeout)
 
   # Transmit a generic (non-ESB) payload
-  def transmit_payload_generic(self, payload):
-    data = [len(payload)]+map(ord, payload)
+  def transmit_payload_generic(self, payload, address="\x33\x33\x33\x33\x33"):
+    data = [len(payload), len(address)]+map(ord, payload)+map(ord, address)
     self.send_usb_command(TRANSMIT_PAYLOAD_GENERIC, data)
     return self.dongle.read(0x81, 64, timeout=nrf24.usb_timeout)[0] > 0
 
