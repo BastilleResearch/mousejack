@@ -21,7 +21,7 @@ import usb, logging
 # Check pyusb dependency
 try:
   from usb import core as _usb_core
-except ImportError, ex: 
+except ImportError, ex:
   print '''
 ------------------------------------------
 | PyUSB was not found or is out of date. |
@@ -36,7 +36,7 @@ sudo pip install -U -I pip && sudo pip install -U -I pyusb
 # USB commands
 TRANSMIT_PAYLOAD               = 0x04
 ENTER_SNIFFER_MODE             = 0x05
-ENTER_PROMISCUOUS_MODE         = 0x06  
+ENTER_PROMISCUOUS_MODE         = 0x06
 ENTER_TONE_TEST_MODE           = 0x07
 TRANSMIT_ACK_PAYLOAD           = 0x08
 SET_CHANNEL                    = 0x09
@@ -49,7 +49,7 @@ RECEIVE_PAYLOAD                = 0x12
 # nRF24LU1+ registers
 RF_CH = 0x05
 
-# RF data rates 
+# RF data rates
 RF_RATE_250K = 0
 RF_RATE_1M   = 1
 RF_RATE_2M   = 2
@@ -119,7 +119,7 @@ class nrf24:
     data = [len(payload), timeout, retransmits]+map(ord, payload)
     self.send_usb_command(TRANSMIT_PAYLOAD, data)
     return self.dongle.read(0x81, 64, timeout=nrf24.usb_timeout)[0] > 0
-      
+
   # Transmit an ESB ACK payload
   def transmit_ack_payload(self, payload):
     data = [len(payload)]+map(ord, payload)

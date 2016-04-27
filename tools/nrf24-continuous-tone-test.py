@@ -24,13 +24,13 @@ from lib import common
 common.init_args('./nrf24-continuous-tone-test.py')
 common.parse_and_init()
 
-# Set the initial channel 
+# Set the initial channel
 common.radio.set_channel(common.channels[0])
 
 # Put the radio in continuous tone test mode
 common.radio.enter_tone_test_mode()
 
-# Run indefinitely 
+# Run indefinitely
 while True:
   pass
 

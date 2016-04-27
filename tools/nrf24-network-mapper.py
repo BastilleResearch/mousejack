@@ -31,7 +31,7 @@ common.parse_and_init()
 # Parse the address
 address = common.args.address.replace(':', '').decode('hex')[::-1][:5]
 address_string = ':'.join('{:02X}'.format(ord(b)) for b in address[::-1])
-if len(address) < 2: 
+if len(address) < 2:
   raise Exception('Invalid address: {0}'.format(common.args.address))
 
 # Put the radio in sniffer mode (ESB w/o auto ACKs)
@@ -40,7 +40,7 @@ common.radio.enter_sniffer_mode(address)
 # Parse the ping payload
 ping_payload = common.args.ping_payload.replace(':', '').decode('hex')
 
-# Format the ACK timeout and auto retry values 
+# Format the ACK timeout and auto retry values
 ack_timeout = int(common.args.ack_timeout / 250) - 1
 ack_timeout = max(0, min(ack_timeout, 15))
 retries = max(0, min(common.args.retries, 15))
@@ -64,7 +64,7 @@ for p in range(2):
       if common.radio.transmit_payload(ping_payload, ack_timeout, retries):
         valid_addresses.append(try_address)
         logging.info('Successful ping of {0} on channel {1}'.format(
-          ':'.join('{:02X}'.format(ord(b)) for b in try_address[::-1]), 
+          ':'.join('{:02X}'.format(ord(b)) for b in try_address[::-1]),
           common.channels[c]))
 
 # Print the results
