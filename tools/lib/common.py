@@ -35,7 +35,7 @@ def init_args(description):
   parser.add_argument('-l', '--lna', action='store_true', help='Enable the LNA (for CrazyRadio PA dongles)', default=False)
   parser.add_argument('-i', '--index', type=int, help='Dongle index', default=0)
 
-# Parse and process common comand line arguments 
+# Parse and process common comand line arguments
 def parse_and_init():
 
   global parser
@@ -43,18 +43,18 @@ def parse_and_init():
   global channels
   global radio
 
-  # Parse the command line arguments 
+  # Parse the command line arguments
   args = parser.parse_args()
 
   # Setup logging
   level = logging.DEBUG if args.verbose else logging.INFO
   logging.basicConfig(level=level, format='[%(asctime)s.%(msecs)03d]  %(message)s', datefmt="%Y-%m-%d %H:%M:%S")
 
-  # Set the channels 
+  # Set the channels
   channels = args.channels
   logging.debug('Using channels {0}'.format(', '.join(str(c) for c in channels)))
 
-  # Initialize the radio 
+  # Initialize the radio
   radio = nrf24(args.index)
   if args.lna: radio.enable_lna()
 

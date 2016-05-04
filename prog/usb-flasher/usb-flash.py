@@ -25,7 +25,7 @@ logging.basicConfig(level=logging.INFO, format='[%(asctime)s.%(msecs)03d]  %(mes
 # Check pyusb dependency
 try:
   from usb import core as _usb_core
-except ImportError, ex: 
+except ImportError, ex:
   print '''
 ------------------------------------------
 | PyUSB was not found or is out of date. |
@@ -49,10 +49,10 @@ if len(sys.argv) < 2:
 with open(sys.argv[1], 'rb') as f:
   data = f.read()
 
-# Zero pad the data to a multiple of 512 bytes 
+# Zero pad the data to a multiple of 512 bytes
 data += '\000' * (512 - len(data) % 512)
 
-# Find an attached device running CrazyRadio or RFStorm firmware 
+# Find an attached device running CrazyRadio or RFStorm firmware
 logging.info("Looking for a compatible device that can jump to the Nordic bootloader")
 product_ids = [0x0102, 0x7777]
 for product_id in product_ids:
@@ -64,7 +64,7 @@ for product_id in product_ids:
   except AttributeError:
     continue
 
-  # Device found, instruct it to jump to the Nordic bootloader 
+  # Device found, instruct it to jump to the Nordic bootloader
   logging.info("Device found, jumping to the Nordic bootloader")
   if product_id == 0x0102: dongle.write(0x01, [0xFF], timeout=usb_timeout)
   else: dongle.ctrl_transfer(0x40, 0xFF, 0, 0, (), timeout=usb_timeout)
@@ -72,7 +72,7 @@ for product_id in product_ids:
   except: pass
 
 # Find an attached device running the Nordic bootloader, waiting up
-# to 1000ms to allow time for USB to reinitialize after the the 
+# to 1000ms to allow time for USB to reinitialize after the the
 # CrazyRadio or RFStorm firmware jumps to the bootloader
 logging.info("Looking for a device running the Nordic bootloader")
 start = time.time()
@@ -84,9 +84,9 @@ while time.time() - start < 1:
     dongle.set_configuration()
     break
   except AttributeError:
-    continue  
+    continue
 
-# Verify that we found a compatible device 
+# Verify that we found a compatible device
 if not dongle:
   logging.info("No compatbile device found")
   raise Exception('No compatible device found.')
@@ -102,7 +102,7 @@ for page in range(page_count):
 
   # Write the page as 8 pages of 64 bytes
   for block in range(8):
-  
+
     # Write the block
     block_write = data[page*512+block*64:page*512+block*64+64]
     dongle.write(0x01, block_write, usb_timeout)
@@ -119,7 +119,7 @@ for page in range(page_count):
 
   # Read the page as 8 pages of 64 bytes
   for block in range(8):
-  
+
     # Read the block
     dongle.write(0x01, [0x03, block_number], usb_timeout)
     block_read = array.array('B', dongle.read(0x81, 64, usb_timeout)).tostring()

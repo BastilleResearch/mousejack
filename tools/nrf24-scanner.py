@@ -28,16 +28,16 @@ common.parse_and_init()
 
 # Parse the prefix addresses
 prefix_address = common.args.prefix.replace(':', '').decode('hex')
-if len(prefix_address) > 5: 
+if len(prefix_address) > 5:
   raise Exception('Invalid prefix address: {0}'.format(args.address))
 
 # Put the radio in promiscuous mode
 common.radio.enter_promiscuous_mode(prefix_address)
 
-# Convert dwell time from milliseconds to seconds 
-dwell_time = common.args.dwell / 1000 
+# Convert dwell time from milliseconds to seconds
+dwell_time = common.args.dwell / 1000
 
-# Set the initial channel 
+# Set the initial channel
 common.radio.set_channel(common.channels[0])
 
 # Sweep through the channels and decode ESB packets in pseudo-promiscuous mode
@@ -60,9 +60,9 @@ while True:
 
     # Log the packet
     logging.info('{0: >2}  {1: >2}  {2}  {3}'.format(
-              common.channels[channel_index], 
-              len(payload), 
-              ':'.join('{:02X}'.format(b) for b in address), 
+              common.channels[channel_index],
+              len(payload),
+              ':'.join('{:02X}'.format(b) for b in address),
               ':'.join('{:02X}'.format(b) for b in payload)))
 
 

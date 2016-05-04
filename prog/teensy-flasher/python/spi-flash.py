@@ -36,7 +36,7 @@ if len(sys.argv) < 2:
 with open(sys.argv[1], 'rb') as f:
   data = f.read()
 
-# Zero pad the data to a multiple of 512 bytes 
+# Zero pad the data to a multiple of 512 bytes
 data += '\000' * (512 - len(data) % 512)
 
 # Teensy serial client
@@ -51,7 +51,7 @@ class client(serial.Serial):
     string = ''
     while True:
       char = self.read()
-      if char != '\n': 
+      if char != '\n':
         string += char
       else: break
     return string
@@ -65,12 +65,12 @@ class client(serial.Serial):
   # Write a page
   def write_page(self, page, data):
 
-    if len(data) != 512: 
+    if len(data) != 512:
       raise Exception("Expected 512 bytes of data, got {0}".format(len(data)))
 
     command = map(chr, [WRITE_PAGE, page & 0xFF])
     self.write(command)
-    self.write(data)  
+    self.write(data)
     self.readline()
 
 # Find the Teensy serial port
@@ -84,7 +84,7 @@ for port in list_ports.comports():
 if not comport:
   raise Exception('Failed to find Teensy COM port.')
 
-# Connect to the Teensy 
+# Connect to the Teensy
 logging.info('Connecting to Teensy over serial at {0}'.format(comport))
 ser = client(port=comport, baudrate=115200)
 
