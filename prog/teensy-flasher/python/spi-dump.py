@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python
 '''
   Copyright (C) 2016 Bastille Networks
 
@@ -27,18 +27,6 @@ logging.basicConfig(level=logging.INFO, format='[%(asctime)s.%(msecs)03d]  %(mes
 READ_PAGE       = 0x00
 WRITE_PAGE      = 0x02
 
-# Verify that we received a command line argument
-if len(sys.argv) < 2:
-  print 'Usage: ./spi-flash.py path-to-firmware.bin'
-  quit()
-
-# Read in the firmware
-with open(sys.argv[1], 'rb') as f:
-  data = f.read()
-
-# Zero pad the data to a multiple of 512 bytes
-if len(data) % 512 > 0: data += '\000' * (512 - len(data) % 512)
-
 # Teensy serial client
 class client(serial.Serial):
 
@@ -62,17 +50,6 @@ class client(serial.Serial):
     self.write(command)
     return self.readline()
 
-  # Write a page
-  def write_page(self, page, data):
-
-    if len(data) != 512:
-      raise Exception("Expected 512 bytes of data, got {0}".format(len(data)))
-
-    command = map(chr, [WRITE_PAGE, page & 0xFF])
-    self.write(command)
-    self.write(data)
-    self.readline()
-
 # Find the Teensy serial port
 logging.info("Finding for Teensy COM port")
 comport = None
@@ -88,23 +65,20 @@ if not comport:
 logging.info('Connecting to Teensy over serial at {0}'.format(comport))
 ser = client(port=comport, baudrate=115200)
 
-# Write the data, one page at a time
-logging.info('Writing image to flash')
-for x in range(len(data)/512):
-  page = data[x*512:x*512+512]
-  ser.write_page(x, page)
-
-# Verify that the image was written correctly, reading one page at a time
-logging.info("Verifying write")
-for x in range(len(data)/512):
+# Read the flash memory
+logging.info("Reading flash memory")
+address = 0
+for x in range(32768/512):
   page_hex = ser.read_page(x)
   page_bytes = page_hex.decode('hex')
-  if page_bytes != data[x*512:x*512+512]:
-    raise Exception('Verification failed on page {0}'.format(x))
+  for y in range(16):
+    line_bytes = '20{0:04X}00{1}'.format(address, ''.join("{:02X}".format(ord(c)) for c in page_bytes[y*32:(y+1)*32]))
+    checksum = sum(map(ord, line_bytes.decode('hex')))
+    checksum = (~checksum + 1 & 0xFF)
+    print ':{0}{1:02X}'.format(line_bytes, checksum)
+    address += 32
+print ':00000001FF'
 
 # Close the serial connection
 ser.close()
-
-logging.info("Firmware programming completed successfully")
-logging.info("\033[92m\033[1mPlease unplug your dongle or breakout board and plug it back in.\033[0m")
 
