@@ -1,12 +1,20 @@
 SDCC ?= sdcc
-CFLAGS = --model-large --std-c99
+CFLAGS = --model-large --std-c99 -Isrc
 LDFLAGS = --xram-loc 0x8000 --xram-size 2048 --model-large
 VPATH = src/
 OBJS = main.rel usb.rel usb_desc.rel radio.rel
 
+ifeq ($(CRPA),y)
+	OBJS += platforms/crpa.rel
+else ifeq ($(CRPA_MSPI),y)
+	OBJS += platforms/crpa_mspi.rel
+else
+	OBJS += platforms/generic.rel
+endif
+
 SDCC_VER := $(shell $(SDCC) -v | grep -Po "\d\.\d\.\d" | sed "s/\.//g")
 
-all: sdcc bin/ dongle.bin
+all: sdcc bin/ bin/platforms/ dongle.bin
 
 sdcc:
 	@if test $(SDCC_VER) -lt 310; then echo "Please update SDCC to 3.1.0 or newer."; exit 2; fi
@@ -21,7 +29,7 @@ dongle.bin: $(OBJS)
 	$(SDCC) $(CFLAGS) -c $< -o bin/$@
 
 clean:
-	rm -f bin/*
+	rm -rf bin/*
 
 install:
 	./prog/usb-flasher/usb-flash.py bin/dongle.bin
@@ -34,3 +42,6 @@ logitech_install:
 
 bin/:
 	mkdir -p bin
+
+bin/platforms/:
+	mkdir -p bin/platforms/
