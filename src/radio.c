@@ -4,6 +4,7 @@
 #include "usb.h"
 #include "radio.h"
 #include "nRF24LU1P.h"
+#include "platform.h"
 
 // Enter ESB promiscuous mode
 void enter_promiscuous_mode(uint8_t * prefix, uint8_t prefix_length)
@@ -180,8 +181,7 @@ void handle_radio_request(uint8_t request, uint8_t * data)
   // Enable the LNA (CrazyRadio PA)
   else if(request == ENABLE_LNA)
   {
-    P0DIR &= ~0x10;
-    P0 |= 0x10;
+    platform_enable_lna(true);
     in1bc = 0;
     return;
   }
@@ -564,6 +564,31 @@ void handle_radio_request(uint8_t request, uint8_t * data)
     // CE high
     rfce = 1;
     in1bc = 1;
+  }
+
+  else if (request == SPI_TRANSACTION) {
+    const bool assert_csn   = (data[0] & 0x80) != 0;
+    const bool deassert_csn = (data[0] & 0x40) != 0;
+    const uint8_t len       = (data[0] & 0x1f);
+    uint8_t i = 0;
+
+    if (assert_csn) {
+        platform_assert_spi_master_cs(true);
+    }
+
+    if (len != 0) {
+        for (i = 0; i < len; i++)
+        {
+            SMDAT = data[i];
+            in1buf[i] = SMDAT;
+        }
+    }
+
+    if (deassert_csn) {
+        platform_assert_spi_master_cs(false);
+    }
+
+    in1bc = len;
   }
 }
 

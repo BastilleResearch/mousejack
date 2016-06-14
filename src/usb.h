@@ -60,6 +60,7 @@ enum usb_request_type_t
   SET_CONFIGURATION = 9,
 };
 
+
 //Vendor control messages and commands
 #define TRANSMIT_PAYLOAD               0x04
 #define ENTER_SNIFFER_MODE             0x05
@@ -72,5 +73,8 @@ enum usb_request_type_t
 #define TRANSMIT_PAYLOAD_GENERIC       0x0C
 #define ENTER_PROMISCUOUS_MODE_GENERIC 0x0D
 #define RECEIVE_PACKET                 0x12
+
+#define SPI_TRANSACTION                0x20
+
 #define LAUNCH_BOOTLOADER              0xFF
 

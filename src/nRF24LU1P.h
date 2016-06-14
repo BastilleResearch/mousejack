@@ -40,6 +40,8 @@ __sfr __at (0x90) rfcon;          // ref: nRF24LU1+ Product Spec, Section 6.5.1,
 __sfr __at (0xA0) usbcon;         // ref: nRF24LU1+ Product Spec, Section 7.3, Table 24
 __sfr __at (0x80) P0;             // ref: nRF24LU1+ Product Spec, Section 13.1, Table 94
 __sfr __at (0x94) P0DIR;          // ref: nRF24LU1+ Product Spec, Section 13.1, Table 95
+__sfr __at (0x95) P0ALT;          // ref: nRF24LU1+ Product Spec, Section 13.1, Table 96
+__sfr __at (0xC9) P0EXP;          // ref: nRF24LU1+ Product Spec, Section 13.1, Table 97
 __sfr __at (0xE5) RFDAT;          // ref: nRF24LU1+ Product Spec, Section 15.1.2, Table 108
 __sfr __at (0xAB) TICKDV;         // ref: nRF24LU1+ Product Spec, Section 19.3.2, Table 128
 __sfr __at (0xAB) REGXH;          // ref: nRF24LU1+ Product Spec, Section 19.3.6, Table 129
@@ -47,6 +49,8 @@ __sfr __at (0xAC) REGXL;          // ref: nRF24LU1+ Product Spec, Section 19.3.6
 __sfr __at (0xAD) REGXC;          // ref: nRF24LU1+ Product Spec, Section 19.3.6, Table 129
 __sfr __at (0xA8) ien0;           // ref: nRF24LU1+ Product Spec, Section 22.4.1, Table 139
 __sfr __at (0xB8) ien1;           // ref: nRF24LU1+ Product Spec, Section 22.4.2, Table 140
+__sfr __at (0xB2) SMDAT;          // ref: nrf24lu1+ product spec, Section 9.2
+__sfr __at (0xB3) SMCTRL;         // ref: nrf24lu1+ product spec, Section 9.2
 
 // SFR bits
 __sbit __at (0x90) rfce;          // ref: nRF24LU1+ Product Spec, Section 6.5.1, Table 21
