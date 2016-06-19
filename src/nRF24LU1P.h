@@ -34,7 +34,7 @@
 // Microsecond delay
 inline void delay_us(uint16_t us) { do nop_us(); while(--us); }
 
-// Shift feedback registers
+// Special Function Registers (SFR)
 __sfr __at (0xE6) rfctl;          // ref: nRF24LU1+ Product Spec, Section 6.5.1, Table 20
 __sfr __at (0x90) rfcon;          // ref: nRF24LU1+ Product Spec, Section 6.5.1, Table 21
 __sfr __at (0xA0) usbcon;         // ref: nRF24LU1+ Product Spec, Section 7.3, Table 24
