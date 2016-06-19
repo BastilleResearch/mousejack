@@ -100,7 +100,7 @@ __xdata static const uint8_t promiscuous_address[2] = { 0xAA, 0x00 };
 // Radio mode
 enum radio_mode_t
 {
-  // ESB sniffer mode 
+  // ESB sniffer mode
   sniffer = 0,
 
   // ESB promiscuous mode
@@ -111,7 +111,7 @@ enum radio_mode_t
 };
 
 // Radio mode
-__xdata static uint8_t radio_mode; 
+__xdata static uint8_t radio_mode;
 
 // Promiscuous mode state
 __xdata static int pm_prefix_length; // Promixcuous mode address prefix length
