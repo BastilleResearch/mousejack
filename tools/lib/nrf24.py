@@ -45,6 +45,7 @@ ENABLE_LNA_PA                  = 0x0B
 TRANSMIT_PAYLOAD_GENERIC       = 0x0C
 ENTER_PROMISCUOUS_MODE_GENERIC = 0x0D
 RECEIVE_PAYLOAD                = 0x12
+SPI_TRANSACTION                = 0x20
 
 # nRF24LU1+ registers
 RF_CH = 0x05
@@ -142,6 +143,24 @@ class nrf24:
   def enable_lna(self):
     self.send_usb_command(ENABLE_LNA_PA, [])
     self.dongle.read(0x81, 64, timeout=nrf24.usb_timeout)
+
+  # Perform an SPI transfer
+  def spi_transaction(self, mosi_data, assert_csn=True, deassert_csn=True):
+    if len(mosi_data) >= 32:
+      raise ValueError("Input data exceeds 31 byte maximum");
+
+    control = len(mosi_data) & 0x1f
+
+    if assert_csn:
+        control |= 0x80
+
+    if deassert_csn:
+        control |= 0x40
+
+    data = [control] + map(ord, mosi_data)
+
+    self.send_usb_command(SPI_TRANSACTION, data);
+    return self.dongle.read(0x81, 64, timeout=nrf24.usb_timeout)
 
   # Send a USB command
   def send_usb_command(self, request, data):
