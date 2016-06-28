@@ -23,7 +23,7 @@ __code const device_descriptor_t device_descriptor =
 {
   .bLength            = 18,     // Size of this struct
   .bDescriptorType    = DEVICE_DESCRIPTOR,
-  .bcdUSB             = 2,      // USB 2.0
+  .bcdUSB             = 0x0200, // USB 2.0
   .bDeviceClass       = 0xFF,
   .bDeviceSubClass    = 0xFF,
   .bDeviceProtocol    = 0xFF,
