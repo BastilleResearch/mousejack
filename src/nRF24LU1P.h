@@ -41,12 +41,16 @@ __sfr __at (0xA0) usbcon;         // ref: nRF24LU1+ Product Spec, Section 7.3, T
 __sfr __at (0x80) P0;             // ref: nRF24LU1+ Product Spec, Section 13.1, Table 94
 __sfr __at (0x94) P0DIR;          // ref: nRF24LU1+ Product Spec, Section 13.1, Table 95
 __sfr __at (0xE5) RFDAT;          // ref: nRF24LU1+ Product Spec, Section 15.1.2, Table 108
+__sfr __at (0xAB) TICKDV;         // ref: nRF24LU1+ Product Spec, Section 19.3.2, Table 128
+__sfr __at (0xAB) REGXH;          // ref: nRF24LU1+ Product Spec, Section 19.3.6, Table 129
+__sfr __at (0xAC) REGXL;          // ref: nRF24LU1+ Product Spec, Section 19.3.6, Table 129
+__sfr __at (0xAD) REGXC;          // ref: nRF24LU1+ Product Spec, Section 19.3.6, Table 129
 __sfr __at (0xA8) ien0;           // ref: nRF24LU1+ Product Spec, Section 22.4.1, Table 139
 __sfr __at (0xB8) ien1;           // ref: nRF24LU1+ Product Spec, Section 22.4.2, Table 140
 
 // SFR bits
-__sbit __at (0x90) rfce;          // ref: nRF24LU1+ Product Spec, Section 6.5.1, Table 21 
-__sbit __at (0x91) rfcsn;         // ref: nRF24LU1+ Product Spec, Section 6.5.1, Table 21 
+__sbit __at (0x90) rfce;          // ref: nRF24LU1+ Product Spec, Section 6.5.1, Table 21
+__sbit __at (0x91) rfcsn;         // ref: nRF24LU1+ Product Spec, Section 6.5.1, Table 21
 __sbit __at (0xC0) RFRDY;         // ref: nRF24LU1+ Product Spec, Section 22.4.4, Table 146
 
 // Memory mapped register
@@ -77,7 +81,7 @@ __sbit __at (0xC0) RFRDY;         // ref: nRF24LU1+ Product Spec, Section 22.4.4
 #define inisoval   __xreg(0xC7E0) // ref: nRF24LU1+ Product Spec, Section 7.9.26, Table 62
 #define outisoval  __xreg(0xC7E1) // ref: nRF24LU1+ Product Spec, Section 7.9.27, Table 63
 
-// XDATA buffers 
+// XDATA buffers
 uint8_t __at (0xC700) in0buf[64];
 uint8_t __at (0xC680) in1buf[64];
 uint8_t __at (0xC640) out1buf[64];
@@ -161,7 +165,7 @@ enum FEATURE
 {
   EN_DPL     = 0x04,
   EN_ACK_PAY = 0x02,
-  EN_DYN_ACK = 0x01  
+  EN_DYN_ACK = 0x01
 };
 
 // Status flags

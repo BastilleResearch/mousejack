@@ -19,29 +19,29 @@
 #include "nRF24LU1P.h"
 #include "usb_desc.h"
 
-// Bootloader entry point 
+// Nordic nootloader entry point
 static void (*bootloader)() = (void (*)())0x7800;
 
 // USB configured state
 static bool configured;
 
-// Initialize the USB configuraiton 
+// Initialize the USB configuraiton
 bool init_usb();
 
-// Handle a USB setup request 
+// Handle a USB setup request
 void handle_setup_request();
 
 // Reset the USB configuration
 void usb_reset_config();
 
-// Handle a USB radio request 
+// Handle a USB radio request
 void handle_radio_request(uint8_t request, uint8_t * data);
 
 // USB IRQ handler
 void usb_irq() __interrupt(12)  __using(1);
 
 // USB request
-struct usb_request_t 
+struct usb_request_t
 {
   uint8_t bmRequestType;
   uint8_t bRequest;
@@ -51,7 +51,7 @@ struct usb_request_t
 };
 
 // USB request types
-enum usb_request_type_t 
+enum usb_request_type_t
 {
   GET_STATUS = 0,
   SET_ADDRESS = 5,
