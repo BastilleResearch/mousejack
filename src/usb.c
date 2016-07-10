@@ -25,21 +25,21 @@
 // xdata mapped USB request setup buffer
 __xdata struct usb_request_t * request = (__xdata void*)setupbuf;
 
-// Initialize the USB configuraiton 
-bool init_usb() 
+// Initialize the USB configuration
+bool init_usb()
 {
-  uint16_t ms_elapsed = 0; 
+  uint16_t ms_elapsed = 0;
   configured = false;
 
   // Wakeup USB
-  usbcon = 0x40; 
+  usbcon = 0x40;
 
   // Reset the USB bus
   usbcs |= 0x08;
   delay_us(50000);
   usbcs &= ~0x08;
 
-  // Set the default configuration 
+  // Set the default configuration
   usb_reset_config();
 
   // Wait for the USB controller to reach the configured state
@@ -52,19 +52,19 @@ bool init_usb()
 // Reset the USB configuration
 void usb_reset_config()
 {
-  // Setup interrupts 
+  // Setup interrupts
   usbien = 0x11;  // USB reset and setup data valid
   in_ien = 0x00;  // Disable EP IN interrupts
   out_ien = 0x02; // Enable EP1 OUT interrupt
   ien1 = 0x10;    // Enable USB interrupt
   in_irq = 0x1F;  // Clear IN IRQ flags
   out_irq = 0x1F; // Clear OUT IRQ flags
-  
+
   // Enable bulk EP1, disable ISO EPs
   inbulkval = 0x02;
   outbulkval = 0x02;
   inisoval = 0x00;
-  outisoval = 0x00;  
+  outisoval = 0x00;
 
   // Setup EP buffers
   bout1addr = 32;
@@ -78,11 +78,11 @@ void usb_reset_config()
 // USB IRQ handler
 void usb_irq() __interrupt(12)  __using(1)
 {
-  // Which IRQ? 
+  // Which IRQ?
   // ref: nRF24LU1+ Product Spec, Section 7.8.3, Table 34
-  switch (ivec) 
+  switch (ivec)
   {
-    // Setup data available 
+    // Setup data available
     case 0x00:
       handle_setup_request();
       usbirq = 0x01;
@@ -128,7 +128,7 @@ bool write_descriptor()
       memcpy(in0buf, &device_descriptor, desc_len);
       in0bc = desc_len;
       return true;
-  
+
     // Configuration descriptor request
     case CONFIGURATION_DESCRIPTOR:
       if(desc_len > configuration_descriptor.wTotalLength) desc_len = configuration_descriptor.wTotalLength;
@@ -140,20 +140,20 @@ bool write_descriptor()
     // - Language, Manufacturer, or Product
     case STRING_DESCRIPTOR:
        write_device_string(device_strings[setupbuf[2]]);
-       return true;   
-  }  
+       return true;
+  }
 
   // Not handled
   return false;
 }
 
-// Handle a USB setup request 
+// Handle a USB setup request
 void handle_setup_request()
 {
   bool handled = false;
   switch(request->bRequest)
   {
-    // Return a descriptor 
+    // Return a descriptor
     case GET_DESCRIPTOR:
       if(write_descriptor()) handled = true;
       break;
@@ -164,7 +164,7 @@ void handle_setup_request()
       break;
 
     // Set the configuration state
-    case SET_CONFIGURATION:   
+    case SET_CONFIGURATION:
       if (request->wValue == 0) configured = false; // Not configured, drop back to powered state
       else configured = true;                       // Configured
       handled = true;
@@ -184,17 +184,17 @@ void handle_setup_request()
       if (request->bmRequestType == 0x82)
       {
         if ((setupbuf[4] & 0x80) == 0x80) in0buf[0] = in1cs;
-        else in0buf[0] = out1cs; 
+        else in0buf[0] = out1cs;
       }
 
-      // Device / Interface status, always two 0 bytes because 
-      // we're bus powered and don't support remote wakeup 
-      else 
+      // Device / Interface status, always two 0 bytes because
+      // we're bus powered and don't support remote wakeup
+      else
       {
         in0buf[0] = 0;
         in0buf[1] = 0;
       }
-      
+
       in0bc = 2;
       handled = true;
       break;

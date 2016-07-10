@@ -15,17 +15,26 @@
   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include <stdint.h>
 
 #include "usb.h"
 #include "radio.h"
+#include "platform.h"
 
 // Program entry point
 void main()
 {
+  uint8_t heartbeat = 1;
+  uint16_t heartbeat_count = 0;
+
   rfcon = 0x06; // enable RF clock
   rfctl = 0x10; // enable SPI
   ien0 = 0x80;  // enable interrupts
   TICKDV = 0xFF; // set the tick divider
+
+  // Perform platform-specific initializations
+  platform_init();
+  platform_led_off(PLATFORM_LED_HEARTBEAT | PLATFORM_LED_DEBUG);
 
   // Initialise and connect the USB controller
   init_usb();
@@ -40,6 +49,20 @@ void main()
     REGXH = 0xFF;
     REGXL = 0xFF;
     REGXC = 0x08;
+
+    // 1s, 50% duty cycle heatbeat.
+    // This will appear slow down when processor is being kept busy in ISRs
+    if (++heartbeat_count == 500) {
+        if (heartbeat) {
+            platform_led_on(PLATFORM_LED_HEARTBEAT);
+        } else {
+            platform_led_off(PLATFORM_LED_HEARTBEAT);
+        }
+
+        heartbeat ^= 1;
+        heartbeat_count = 0;
+    }
+
     delay_us(1000);
   }
 }

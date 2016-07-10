@@ -19,7 +19,7 @@
 #include <stdint.h>
 #include <stddef.h>
 
-// Descriptor types 
+// Descriptor types
 enum descriptor_type_t
 {
   DEVICE_DESCRIPTOR = 1,
@@ -37,7 +37,7 @@ enum string_descriptor_indexes_t
   STRING_DESCRIPTOR_PRODUCT,
 };
 
-// Device descriptor 
+// Device descriptor
 typedef struct {
    uint8_t  bLength;
    uint8_t  bDescriptorType;
@@ -55,49 +55,49 @@ typedef struct {
    uint8_t  bNumConfigurations;
 } device_descriptor_t;
 
-// Interface descriptor 
+// Interface descriptor
 typedef struct {
   uint8_t bLength;
   uint8_t bDescriptorType;
   uint8_t bInterfaceNumber;
   uint8_t bAlternateSetting;
-  uint8_t bNumEndpoints; 
-  uint8_t bInterfaceClass; 
-  uint8_t bInterfaceSubClass; 
+  uint8_t bNumEndpoints;
+  uint8_t bInterfaceClass;
+  uint8_t bInterfaceSubClass;
   uint8_t bInterfaceProtocol;
-  uint8_t iInterface; 
+  uint8_t iInterface;
 } interface_descriptor_t;
 
-// Endpoint descriptor 
+// Endpoint descriptor
 typedef struct {
   uint8_t  bLength;
   uint8_t  bDescriptorType;
-  uint8_t  bEndpointAddress; 
-  uint8_t  bmAttributes; 
-  uint16_t wMaxPacketSize; 
-  uint8_t  bInterval; 
+  uint8_t  bEndpointAddress;
+  uint8_t  bmAttributes;
+  uint16_t wMaxPacketSize;
+  uint8_t  bInterval;
 } endpoint_descriptor_t;
 
 // Configuration descriptor, EP1 IN and EP1 OUT
 typedef struct {
   uint8_t  bLength;
   uint8_t  bDescriptorType;
-  uint16_t wTotalLength; 
+  uint16_t wTotalLength;
   uint8_t  bNumInterfaces;
   uint8_t  bConfigurationValue;
   uint8_t  iConfiguration;
-  uint8_t  bmAttributes; 
-  uint8_t  bMaxPower; 
-  interface_descriptor_t interface_descriptor; 
-  endpoint_descriptor_t endpoint_1_in_descriptor; 
-  endpoint_descriptor_t endpoint_1_out_descriptor; 
+  uint8_t  bmAttributes;
+  uint8_t  bMaxPower;
+  interface_descriptor_t interface_descriptor;
+  endpoint_descriptor_t endpoint_1_in_descriptor;
+  endpoint_descriptor_t endpoint_1_out_descriptor;
 } configuration_descriptor_t;
 
-// Device descriptor 
-extern __code const device_descriptor_t device_descriptor; 
+// Device descriptor
+extern __code const device_descriptor_t device_descriptor;
 
-// Configuration descriptor 
-extern __code const configuration_descriptor_t configuration_descriptor; 
+// Configuration descriptor
+extern __code const configuration_descriptor_t configuration_descriptor;
 
 // Language, manufacturer, and product device strings
 extern __code char * device_strings[3];
