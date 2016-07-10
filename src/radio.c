@@ -579,7 +579,28 @@ void handle_radio_request(uint8_t request, uint8_t * data)
     if (len != 0) {
         for (i = 0; i < len; i++)
         {
+            // A delay is used here because this request handling is already
+            // executing in an IRQ context; the MSDONE IRQ cannot be used to
+            // determine when data is ready in MISO. This is admittedly sloppy,
+            // but fixing this would require that the handling of all USB
+            // requests be deferred into main() rather than done in the IRQ
+            // context.
+            //
+            // Section 10.2 of the nRF24LU1+ manual appears to indicate
+            // that IRCON.2 can be polled when operating the device
+            // as an SPI slave in non-interrupt mode. However, attempting
+            // to poll this in Master SPI mode does not appear to work.
+            // Even with INTEXP configured to enable MSDONE, no change in
+            // INTCON.2 is observed. The manual does not appear to provide any
+            // indication of whether or not INTCON.2 can be for polled MSPI.
+            //
+            // The duration of this delay was deemed to be sufficient using
+            // a Bitcraze CrazyRadio PA - this delay may need to be adjusted
+            // on a per-platform basis, depending on the speed of the
+            // system clock.
+            //
             SMDAT = data[i+1];
+            delay_us(10);
             in1buf[i] = SMDAT;
         }
     }
