@@ -31,9 +31,32 @@ The following hardware has been tested and is known to work.
 
 ## Build the firmware
 
+To build generic firmware without external peripheral/IO support:
+
 ```
 make
 ```
+
+To build firmware targeting the Bitcraze Crazyradio PA:
+
+```
+make CRPA=y
+```
+
+To build firmware targeting a Bitcraze Crazyradio PA modified to be
+used as an SPI master (e.g., to use as a programmer):
+
+```
+make CRPA_MSPI=y
+```
+
+The above `CRPA_MSPI` firmware requires that U2 has been removed,
+and that pins 2 and 4 of the U2 footprint are connected. This allows
+the CSN pin to be used as an output.
+
+**IMPORTANT:** Using  the `CRPA_MSPI` firmware on an unmodified device
+may damage U2 or U3 due to contention over the CSN signal.
+
 
 ## Flash over USB
 
