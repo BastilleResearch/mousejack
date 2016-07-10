@@ -579,7 +579,7 @@ void handle_radio_request(uint8_t request, uint8_t * data)
     if (len != 0) {
         for (i = 0; i < len; i++)
         {
-            SMDAT = data[i];
+            SMDAT = data[i+1];
             in1buf[i] = SMDAT;
         }
     }
