@@ -20,7 +20,10 @@
 #include "usb_desc.h"
 
 // Nordic nootloader entry point
-static void (*bootloader)() = (void (*)())0x7800;
+static void (*nordic_bootloader)() = (void (*)())0x7800;
+
+// Logitech nootloader entry point
+static void (*logitech_bootloader)() = (void (*)())0x7400;
 
 // USB configured state
 static bool configured;
@@ -72,5 +75,6 @@ enum usb_request_type_t
 #define TRANSMIT_PAYLOAD_GENERIC       0x0C
 #define ENTER_PROMISCUOUS_MODE_GENERIC 0x0D
 #define RECEIVE_PACKET                 0x12
-#define LAUNCH_BOOTLOADER              0xFF
+#define LAUNCH_LOGITECH_BOOTLOADER     0xFE
+#define LAUNCH_NORDIC_BOOTLOADER       0xFF
 
