@@ -13,6 +13,7 @@ void enter_promiscuous_mode(uint8_t * prefix, uint8_t prefix_length)
   for(x = 0; x < prefix_length; x++) pm_prefix[prefix_length - 1 - x] = prefix[x];
   pm_prefix_length = prefix_length > 5 ? 5 : prefix_length;
   radio_mode = promiscuous;
+  pm_payload_length = 32;
 
   // CE low
   rfce = 0;
@@ -36,8 +37,8 @@ void enter_promiscuous_mode(uint8_t * prefix, uint8_t prefix_length)
   // Disable dynamic payload length and automatic ACK handling
   configure_mac(0, 0, ENAA_NONE);
 
-  // Disable CRC, enable RX, 2Mbps data rate, 32 byte payload width
-  configure_phy(PRIM_RX | PWR_UP, RATE_2M, 32);
+  // Disable CRC, enable RX, 2Mbps data rate, pm_payload_length byte payload width
+  configure_phy(PRIM_RX | PWR_UP, RATE_2M, pm_payload_length);
 
   // CE high
   rfce = 1;
@@ -45,13 +46,14 @@ void enter_promiscuous_mode(uint8_t * prefix, uint8_t prefix_length)
 }
 
 // Enter generic promiscuous mode
-void enter_promiscuous_mode_generic(uint8_t * prefix, uint8_t prefix_length, uint8_t rate)
+void enter_promiscuous_mode_generic(uint8_t * prefix, uint8_t prefix_length, uint8_t rate, uint8_t payload_length)
 {
   // Update the promiscuous mode state
   int x;
   for(x = 0; x < prefix_length; x++) pm_prefix[prefix_length - 1 - x] = prefix[x];
   pm_prefix_length = prefix_length > 5 ? 5 : prefix_length;
   radio_mode = promiscuous_generic;
+  pm_payload_length = payload_length;
 
   // CE low
   rfce = 0;
@@ -75,12 +77,12 @@ void enter_promiscuous_mode_generic(uint8_t * prefix, uint8_t prefix_length, uin
   // Disable dynamic payload length and automatic ACK handling
   configure_mac(0, 0, ENAA_NONE);
 
-  // Disable CRC, enable RX, specified data rate, and 32 byte payload width
+  // Disable CRC, enable RX, specified data rate, and pm_payload_length byte payload width
   switch(rate)
   {
-    case 0:  configure_phy(PRIM_RX | PWR_UP, RF_PWR_4 | RATE_250K, 32); break;
-    case 1:  configure_phy(PRIM_RX | PWR_UP, RF_PWR_4 | RATE_1M, 32); break;
-    default: configure_phy(PRIM_RX | PWR_UP, RF_PWR_4 | RATE_2M, 32); break;
+    case 0:  configure_phy(PRIM_RX | PWR_UP, RF_PWR_4 | RATE_250K, pm_payload_length); break;
+    case 1:  configure_phy(PRIM_RX | PWR_UP, RF_PWR_4 | RATE_1M, pm_payload_length); break;
+    default: configure_phy(PRIM_RX | PWR_UP, RF_PWR_4 | RATE_2M, pm_payload_length); break;
   }
 
   // CE high
@@ -216,7 +218,7 @@ void handle_radio_request(uint8_t request, uint8_t * data)
   // Enter generic promiscuous mode
   else if(request == ENTER_PROMISCUOUS_MODE_GENERIC)
   {
-    enter_promiscuous_mode_generic(&data[2] /* address prefix */, data[0] /* prefix length */, data[1] /* rate */);
+    enter_promiscuous_mode_generic(&data[3] /* address prefix */, data[0] /* prefix length */, data[1] /* rate */, data[2] /* payload length */);
   }
 
   // Enter continuous tone test mode
@@ -270,7 +272,7 @@ void handle_radio_request(uint8_t request, uint8_t * data)
 
         // Read in the "promiscuous" mode payload, concatenated to the prefix
         for(x = 0; x < pm_prefix_length; x++) payload[pm_prefix_length - x - 1] = pm_prefix[x];
-        read_register(R_RX_PAYLOAD, &payload[pm_prefix_length], 32);
+        read_register(R_RX_PAYLOAD, &payload[pm_prefix_length], pm_payload_length);
 
         // In promiscuous mode without a defined address prefix, we attempt to
         // decode the payload as-is, and then shift it by one bit and try again
@@ -295,7 +297,7 @@ void handle_radio_request(uint8_t request, uint8_t * data)
           // Check for a valid payload length, which is less than the usual 32 bytes
           // because we need to account for the packet header, CRC, and part or all
           // of the address bytes.
-          if(payload_length <= 23 + pm_prefix_length)
+          if(payload_length <= (pm_payload_length-9) + pm_prefix_length)
           {
             // Read the given CRC
             crc_given = (payload[6 + payload_length] << 9) | ((payload[7 + payload_length]) << 1);
@@ -333,12 +335,12 @@ void handle_radio_request(uint8_t request, uint8_t * data)
 
         // Read in the "promiscuous" mode payload, concatenated to the prefix
         for(x = 0; x < pm_prefix_length; x++) payload[pm_prefix_length - x - 1] = pm_prefix[x];
-        read_register(R_RX_PAYLOAD, &payload[pm_prefix_length], 32);
+        read_register(R_RX_PAYLOAD, &payload[pm_prefix_length], pm_payload_length);
 
         // Write the payload to the output buffer
-        memcpy(in1buf, payload, pm_prefix_length + 32);
-        in1bc = pm_prefix_length + 32;
-        flush_rx();
+        memcpy(in1buf, payload, pm_prefix_length + pm_payload_length);
+        in1bc = pm_prefix_length + pm_payload_length;
+        // flush_rx();
         return;
       }
     }

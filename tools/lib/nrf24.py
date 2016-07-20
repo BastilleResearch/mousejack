@@ -81,8 +81,8 @@ class nrf24:
       logging.debug('Entered promiscuous mode')
 
   # Put the radio in pseudo-promiscuous mode without CRC checking
-  def enter_promiscuous_mode_generic(self, prefix=[], rate=RF_RATE_2M):
-    self.send_usb_command(ENTER_PROMISCUOUS_MODE_GENERIC, [len(prefix), rate]+map(ord, prefix))
+  def enter_promiscuous_mode_generic(self, prefix=[], rate=RF_RATE_2M, payload_length=32):
+    self.send_usb_command(ENTER_PROMISCUOUS_MODE_GENERIC, [len(prefix), rate, payload_length]+map(ord, prefix))
     self.dongle.read(0x81, 64, timeout=nrf24.usb_timeout)
     if len(prefix) > 0:
       logging.debug('Entered generic promiscuous mode with address prefix {0}'.

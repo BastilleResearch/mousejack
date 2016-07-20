@@ -28,7 +28,7 @@ void enter_promiscuous_mode(uint8_t * prefix, uint8_t prefix_length);
 //   prefix:        address prefix; used for vendors with fixed start of address bytes
 //   prefix_length: prefix length, in bytes
 //   rate:          data rate (0=250K, 1=1M, 2=2M)
-void enter_promiscuous_mode_generic(uint8_t * prefix, uint8_t prefix_length, uint8_t rate);
+void enter_promiscuous_mode_generic(uint8_t * prefix, uint8_t prefix_length, uint8_t rate, uint8_t payload_length);
 
 // Configure addressing on pipe 0
 //   address: address bytes
@@ -100,7 +100,7 @@ __xdata static const uint8_t promiscuous_address[2] = { 0xAA, 0x00 };
 // Radio mode
 enum radio_mode_t
 {
-  // ESB sniffer mode 
+  // ESB sniffer mode
   sniffer = 0,
 
   // ESB promiscuous mode
@@ -111,8 +111,9 @@ enum radio_mode_t
 };
 
 // Radio mode
-__xdata static uint8_t radio_mode; 
+__xdata static uint8_t radio_mode;
 
 // Promiscuous mode state
-__xdata static int pm_prefix_length; // Promixcuous mode address prefix length
-__xdata static uint8_t pm_prefix[5]; // Promixcuous mode address prefix
+__xdata static int pm_prefix_length;      // Promixcuous mode address prefix length
+__xdata static uint8_t pm_prefix[5];      // Promixcuous mode address prefix
+__xdata static uint8_t pm_payload_length; // Promiscuous mode payload length
