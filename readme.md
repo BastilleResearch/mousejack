@@ -63,6 +63,14 @@ To flash the firmware over USB onto a Logitech Unifying dongle:
 sudo make logitech_install
 ```
 
+## Flash a Logitech Unifying dongle back to the original firmware
+
+Download and extract the Logitech firmware image, which will be named `RQR_012_005_00028.hex` or similar. Then, run the following command to flash the Logitech firmware onto the dongle:
+
+```
+sudo ./prog/usb-flasher/logitech-usb-restore.py [path-to-firmware.hex]
+```
+
 ## Flash over SPI using a Teensy
 
 If your dongle or breakout board is bricked, you can alternatively program it over SPI using a Teensy.

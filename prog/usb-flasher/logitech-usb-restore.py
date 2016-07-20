@@ -1,42 +1,36 @@
-#!/usr/bin/env python
+#!/usr/bin/env python2
+'''
+  Copyright (C) 2016 Bastille Networks
+
+  This program is free software: you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
+
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+
+  You should have received a copy of the GNU General Public License
+  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+'''
 
 from unifying import *
-
-# Compute CRC-CCITT over 1 byte
-def crc_update(crc, data):
-  crc ^= (data << 8)
-  for x in range(8):
-    if (crc & 0x8000) == 0x8000: crc = ((crc << 1) ^ 0x1021) & 0xFFFF
-    else: crc <<= 1
-  crc &= 0xFFFF
-  return crc
+import subprocess
 
 # Make sure a firmware image path was passed in
 if len(sys.argv) < 3:
-  print "Usage: sudo ./logitech-usb-flash.py [firmware-image.bin] [firmware-image.ihx]"
+  print "Usage: sudo ./logitech-usb-flash.py [firmware-image.hex]"
 
-# Compute the CRC of the firmware image
-logging.info("Computing the CRC of the firmware image")
-path = sys.argv[1]
-with open(path, 'rb') as f:
-  data = f.read()
-crc = 0xFFFF
-for x in range(len(data)):
-  crc = crc_update(crc, ord(data[x]))
-
-# Read in the firmware hex file
-logging.info("Preparing USB payloads")
-path = sys.argv[2]
-with open(path) as f:
+# Read in the firmware image
+with open(sys.argv[1]) as f:
   lines = f.readlines()
   lines = [line.strip()[1:] for line in lines]
   lines = [line[2:6] + line[0:2] + line[8:-2] for line in lines]
   lines = ["20" + line + "0"*(62-len(line)) for line in lines]
   payloads = [line.decode('hex') for line in lines]
   payloads[0] = payloads[0][0:2] + chr((ord(payloads[0][2]) + 1)) + chr((ord(payloads[0][3]) - 1)) + payloads[0][5:]
-
-# Add the firmware CRC
-payloads.append('\x20\x67\xFE\x02' + struct.pack('!H', crc) + '\x00'*26)
 
 # Instantiate the dongle
 dongle = unifying_dongle()

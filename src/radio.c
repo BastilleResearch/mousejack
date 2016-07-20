@@ -172,10 +172,25 @@ uint16_t crc_update(uint16_t crc, uint8_t byte, uint8_t bits)
 // Handle a USB radio request
 void handle_radio_request(uint8_t request, uint8_t * data)
 {
-  // Enter the bootloader
-  if(request == LAUNCH_BOOTLOADER)
+  // Enter the Nordic bootloader
+  if(request == LAUNCH_NORDIC_BOOTLOADER)
   {
-    bootloader();
+    nordic_bootloader();
+    return;
+  }
+
+  // Enter the bootloader
+  if(request == LAUNCH_LOGITECH_BOOTLOADER)
+  {
+    const uint8_t command[9] = {'E', 'n', 't', 'e', 'r', ' ', 'I', 'C', 'P'};
+    uint8_t command_length = 9;
+    int x;
+    for(x = 0; x < command_length; x++)
+    {
+      AESIA1 = x;
+      AESIV = command[x];
+    }
+    logitech_bootloader();
     return;
   }
 
