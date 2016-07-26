@@ -1,6 +1,4 @@
-# RFStorm nRF24LU1+ Research Firmware
-
-Firmware and research tools for Nordic Semiconductor nRF24LU1+ based USB dongles and breakout boards.
+# MouseJack device discovery and research tools
 
 For information on the MouseJack vulnerabilities, please visit [mousejack.com](https://www.mousejack.com).
 
@@ -29,9 +27,17 @@ The following hardware has been tested and is known to work.
 - SparkFun nRF24LU1+ breakout board
 - Logitech Unifying dongle (model C-U0007, Nordic Semiconductor based)
 
+## Initialize the submodule
+
+```
+git submodule init
+git submodule update
+```
+
 ## Build the firmware
 
 ```
+cd nrf-research-firmware
 make
 ```
 
@@ -48,6 +54,7 @@ Dongles and breakout boards can be programmed over USB if they are running one o
 To flash the firmware over USB:
 
 ```
+cd nrf-research-firmware
 sudo make install
 ```
 
@@ -60,6 +67,7 @@ script will automatically detect which type of dongle is plugged in, and will on
 To flash the firmware over USB onto a Logitech Unifying dongle:
 
 ```
+cd nrf-research-firmware
 sudo make logitech_install
 ```
 
@@ -68,6 +76,7 @@ sudo make logitech_install
 Download and extract the Logitech firmware image, which will be named `RQR_012_005_00028.hex` or similar. Then, run the following command to flash the Logitech firmware onto the dongle:
 
 ```
+cd nrf-research-firmware
 sudo ./prog/usb-flasher/logitech-usb-restore.py [path-to-firmware.hex]
 ```
 
@@ -80,6 +89,7 @@ This has only been tested with a Teensy 3.1/3.2, but is likely to work with othe
 ### Build and Upload the Teensy Flasher
 
 ```
+cd nrf-research-firmware/prog
 platformio run --project-dir teensy-flasher --target upload
 ```
 
@@ -99,6 +109,7 @@ platformio run --project-dir teensy-flasher --target upload
 ### Flash the nRF24LU1+
 
 ```
+cd nrf-research-firmware
 sudo make spi_install
 ```
 
@@ -129,6 +140,7 @@ Scan for devices on channels 1-5
 Scan for devices with an address starting in 0xA9 on all channels
 
 ```
+cd nrf-research-firmware
 ./nrf24-scanner.py -p A9
 ```
 
@@ -154,6 +166,7 @@ optional arguments:
 Sniff packets from address 61:49:66:82:03 on all channels
 
 ```
+cd nrf-research-firmware
 ./nrf24-sniffer.py -a 61:49:66:82:03
 ```
 
@@ -178,6 +191,7 @@ optional arguments:
 Map the star network that address 61:49:66:82:03 belongs to
 
 ```
+cd nrf-research-firmware
 ./nrf24-network-mapper.py -a 61:49:66:82:03
 ```
 
@@ -201,5 +215,6 @@ optional arguments:
 Transmit a continuous tone at 2405MHz
 
 ```
+cd nrf-research-firmware
 ./nrf24-continuous-tone-test.py -c 5
 ```
