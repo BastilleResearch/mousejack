@@ -1,0 +1,90 @@
+Bastille Threat Research Team Tracking Number 11
+Document version: 1.0
+
+Overview
+
+The Dell KM714 wireless keyboard remains vulnerable to a previously reported unencrypted keystroke
+injection vulnerability after all available patches have been applied. 
+
+
+
+Affected Platforms
+
+The following products have been tested and shown to be affected:
+
+- Dell KM714 wireless keyboard
+- Dell KM714 USB Dongle C-U0007
+  - Firmware version 012.005.00028
+  - USB ID 046d:c52b
+
+
+
+Impact
+
+The updates made available by Dell for the KM714 wireless keyboard and mouse set do not work to update
+the firmware on the USB dongle, keyboard, or mouse. 
+
+1. Dell Universal Receiver Control Panel
+
+http://www.dell.com/support/home/us/en/19/product-support/product/dell-wir-kybrd-mouse-km714/drivers
+
+The software installs without error, but the user interface displays a message "Please plug in a Dell 
+Universal Receiver to get started," and does not appear to recognize the Dell KM714 USB dongle. 
+
+2. KM714 & WM514 Dell Universal Receiver Update
+
+http://www.dell.com/support/home/us/en/19/Drivers/DriversDetails?driverId=7N2F0
+
+The "Dell FW Upgrade Tool" installation fails with the error message "A compatible device is not 
+detected."
+
+3. Dell Unifying Application
+
+http://www.dell.com/support/home/us/en/19/Drivers/DriversDetails?driverId=9PPPW
+
+This installs the Logitech Unifying software, which does not contain a firmware update for the Dell 
+KM714 set. 
+
+4. Logitech Firmware
+
+https://forums.logitech.com/t5/Mice-and-Pointing-Devices/Logitech-Response-to-Unifying-Receiver-Research-Findings/m-p/1493878/thread-id/73186
+
+The Dell KM714 USB dongle is identical to the USB dongles bundled with Logitech Unifying keyboards 
+and mice. Installing the Logitech provided firmware on a Dell KM714 USB dongle fails to mitigate 
+unencrypted keystroke injection attacks on several computer configurations. 
+
+On a computer with a clean install of Windows 10, a USB dongle with the latest firmware does not 
+accept unencrypted keystrokes. However, there are several situations in which keystroke injection still 
+works. 
+
+A. When Logitech SetPoint is installed on Windows, keystroke injection starts working again. Tested on 
+Windows 10.
+
+B. Keystroke injection works on Linux. Tested on Ubuntu 14.04, Ubuntu 15.04, and Ubuntu 16.04. 
+
+C. Keystroke injection works on OSX. Tested on OSX Yosemite. 
+
+
+
+Mitigation
+
+Exploiting this vulnerability involves transmitting RF packets to a Dell KM714 USB dongle, which 
+requires physical proximity to the target computer. 
+
+
+
+Suggested Solutions 
+
+Update the USB dongle firmware to prevent unencrypted keystrokes from being sent to the host computer.
+
+
+
+Test Environment
+
+Keystroke injection was tested using a nRF24LU1+ based USB dongle, transmitting to a Dell KM714 USB dongle.
+
+
+
+Credits
+
+Marc Newlin
