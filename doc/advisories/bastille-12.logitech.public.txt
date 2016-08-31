@@ -1,0 +1,48 @@
+Bastille Threat Research Team Tracking Number 12
+Document version: 1.0
+
+Overview
+
+A vulnerability has been discovered that allows an attacker to inject keystrokes into a computer
+equipped with a Logitech G900 mouse. 
+
+
+
+Affected Platforms
+
+The following products have been tested and shown to be affected:
+
+- Logitech G900
+- Logitech G900 dongle C-U0008 (USB ID 046d:c539)
+
+
+
+Impact
+
+Transmitting unencrypted packets to the RF address of a Logitech G900 mouse will generate keypresses.
+
+
+
+Mitigation
+
+Exploiting this vulnerability involves transmitting RF packets to a Logitech USB dongle, which 
+requires physical proximity to the target computer.
+
+
+
+Suggested Solutions
+
+The transceivers used in the G900 USB dongle and mouse support 128-bit AES encryption. Updating
+the firmware on the dongle and mouse to enable encryption would mitigate this vulnerability. 
+
+
+
+Test Environment
+
+Keystroke injection was tested using a nRF24LU1+ based USB dongle, transmitting to a G900 USB dongle.
+
+
+
+Credits
+
+Marc Newlin

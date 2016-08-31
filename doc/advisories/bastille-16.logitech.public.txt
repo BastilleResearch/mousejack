@@ -1,0 +1,54 @@
+Bastille Threat Research Team Tracking Number 16
+Document version: 1.0
+
+Overview
+
+A vulnerability has been discovered that allows an attacker to wirelessly configure a Logitech G900
+mouse to inject a keystroke macro whenever the user clicks a specified mouse button. 
+
+
+
+Affected Platforms
+
+The following products have been tested and shown to be affected:
+
+- Logitech G900
+- Logitech G900 dongle C-U0008 (USB ID 046d:c539)
+
+
+
+Impact
+
+Using the Logitech Gaming Software, a user can customize their G900 mouse to trigger keystroke macros
+whenever they click a specified mouse button. The macros are stored on the mouse itself, and do not
+depend on any software being installed on the host computer. The G900 dongle communicates with the 
+G900 mouse by attaching payloads to ACK packets going from the dongle back to the mouse. 
+
+The communication between the mouse and dongle is unencrypted, making it possible for an attacker to 
+program arbitrary macros into the mouse. 
+
+
+
+Mitigation
+
+Exploiting this vulnerability involves transmitting RF packets to a Logitech G900 mouse, which requires 
+physical proximity to the target mouse.
+
+
+
+Suggested Solutions
+
+The transceivers used in the G900 USB dongle and mouse support 128-bit AES encryption. Updating
+the firmware on the dongle and mouse to enable encryption would mitigate this vulnerability. 
+
+
+
+Test Environment
+
+Keystroke injection was tested using a nRF24LU1+ based USB dongle, transmitting to a G900 mouse.
+
+
+
+Credits
+
+Marc Newlin

@@ -1,0 +1,3 @@
+[submodule "nrf-research-firmware"]
+	path = nrf-research-firmware
+	url = https://github.com/BastilleResearch/nrf-research-firmware.git
