@@ -13,7 +13,7 @@ For information on the MouseJack vulnerabilities, please visit [mousejack.com](h
 Install dependencies on Ubuntu:
 
 ```
-sudo apt-get install sdcc binutils python python-pip
+sudo apt-get install sdcc binutils python python-pip python-usb
 sudo pip install -U pip
 sudo pip install -U -I pyusb
 sudo pip install -U platformio
